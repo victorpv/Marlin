@@ -112,16 +112,16 @@ extern "C" int HAL_main() {
     }
 }
 
-extern "C" int __io_putchar(int ch) {
-	HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100);
-	return ch;
-}
-
-extern "C" int __io_getchar() {
-	int ch = 0;
-	HAL_UART_Receive(&huart1, (uint8_t *)&ch, 1, 100);
-	return ch;
-}
+//extern "C" int __io_putchar(int ch) {
+//	HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100);
+//	return ch;
+//}
+//
+//extern "C" int __io_getchar() {
+//	int ch = 0;
+//	HAL_UART_Receive(&huart1, (uint8_t *)&ch, 1, 100);
+//	return ch;
+//}
 
 //todo: HAL implement
 void pinMode(int pin_number, int mode) {

@@ -34,6 +34,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include "usb_device.h"
 
 
 /* Variables */
@@ -92,13 +93,16 @@ return len;
 
 int _write(int file, char *ptr, int len)
 {
-	int DataIdx;
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++)
-	{
-		__io_putchar(*ptr++);
-	}
-	return len;
+	return CDC_Transmit_FS(ptr, len);
+
+//	int DataIdx;
+//
+//	for (DataIdx = 0; DataIdx < len; DataIdx++)
+//	{
+//		__io_putchar(*ptr++);
+//	}
+//	return len;
 }
 /*
 caddr_t _sbrk(int incr)

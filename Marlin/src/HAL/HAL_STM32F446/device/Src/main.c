@@ -109,11 +109,13 @@ int main(void)
   MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
-  while(1) {
+  //while(1) {
+  for(int i = 0; i < 50; i++) {
 	  uint8_t HiMsg[] = "why hello there!\r\n";
 	  CDC_Transmit_FS(HiMsg, strlen(HiMsg));
-	  HAL_Delay(500);
+	  HAL_Delay(250);
   }
+  //}
 
   HAL_main();
   /* USER CODE END 2 */
