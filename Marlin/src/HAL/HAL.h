@@ -30,6 +30,12 @@
 #define _HAL_H
 
 #include <stdint.h>
+#include <cmath>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+
+typedef int8_t byte;
 
 #include "../../MarlinConfig.h"
 
@@ -84,6 +90,10 @@ void spiSendBlock(uint8_t token, const uint8_t* buf);
 #elif defined(ARDUINO_ARCH_SAM)
   #define CPU_32_BIT
   #include "HAL_DUE/HAL_Due.h"
+  #include "math_32bit.h"
+#elif defined(STM32F446xx)
+  #define CPU_32_BIT
+  #include "HAL_STM32F446/HAL.h"
   #include "math_32bit.h"
 #else
   #error Unsupported Platform!

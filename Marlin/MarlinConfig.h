@@ -35,7 +35,11 @@
     #define HardwareSerial_h // trick to disable the standard HWserial
   #endif
 #endif
-#include "Arduino.h"
+
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_DUO)
+  #include "Arduino.h"
+#endif
+
 #include "Conditionals_post.h"
 #include "SanityCheck.h"
 

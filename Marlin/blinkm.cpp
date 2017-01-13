@@ -24,7 +24,8 @@
  * blinkm.cpp - Library for controlling a BlinkM over i2c
  * Created by Tim Koster, August 21 2013.
  */
-
+//todo: HAL FIX TARGET_NUCLEO_F746ZG
+/*
 #include "Marlin.h"
 
 #if ENABLED(BLINKM)
@@ -43,4 +44,5 @@ void SendColors(byte red, byte grn, byte blu) {
 }
 
 #endif //BLINKM
+*/
 

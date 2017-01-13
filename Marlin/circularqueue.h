@@ -23,7 +23,9 @@
 #ifndef __CIRCULARQUEUE_H__
 #define __CIRCULARQUEUE_H__
 
-#include <Arduino.h>
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_DUO)
+  #include "Arduino.h"
+#endif
 
 /**
  * @brief   Circular Queue class

@@ -28,6 +28,7 @@
 #ifndef CONDITIONALS_POST_H
 #define CONDITIONALS_POST_H
 
+#include "src/HAL/HAL.h"
   /**
    * Axis lengths and center
    */
@@ -163,7 +164,7 @@
     #define DEFAULT_KEEPALIVE_INTERVAL 2
   #endif
 
-  #ifdef __SAM3X8E__
+  #ifdef CPU_32_BIT
     /**
      * Hidden options for developer
      */
@@ -183,13 +184,13 @@
    * MAX_STEP_FREQUENCY differs for TOSHIBA
    */
   #if ENABLED(CONFIG_STEPPERS_TOSHIBA)
-    #ifdef __SAM3X8E__
+    #ifdef CPU_32_BIT
       #define MAX_STEP_FREQUENCY STEP_DOUBLER_FREQUENCY // Max step frequency for Toshiba Stepper Controllers, 96kHz is close to maximum for an Arduino Due
     #else
     #define MAX_STEP_FREQUENCY 10000 // Max step frequency for Toshiba Stepper Controllers
     #endif
   #else
-    #ifdef __SAM3X8E__
+    #ifdef CPU_32_BIT
       #define MAX_STEP_FREQUENCY (STEP_DOUBLER_FREQUENCY * 4) // Max step frequency for the Due is approx. 330kHz
   #else
     #define MAX_STEP_FREQUENCY 40000 // Max step frequency for Ultimaker (5000 pps / half step)

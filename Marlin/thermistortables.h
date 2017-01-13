@@ -30,8 +30,11 @@
 
 #define ANY_THERMISTOR_IS(n) (THERMISTORHEATER_0 == n || THERMISTORHEATER_1 == n || THERMISTORHEATER_2 == n || THERMISTORHEATER_3 == n || THERMISTORBED == n)
 
+
 #if ANY_THERMISTOR_IS(1) // 100k bed thermistor
-const short temptable_1[][2] PROGMEM = {
+
+// const short temptable_1[][2] PROGMEM = { //todo: fix
+const short temptable_1[][2] = {
   {   23 * OVERSAMPLENR, 300 },
   {   25 * OVERSAMPLENR, 295 },
   {   27 * OVERSAMPLENR, 290 },
@@ -94,6 +97,7 @@ const short temptable_1[][2] PROGMEM = {
   { 1004 * OVERSAMPLENR,   5 },
   { 1008 * OVERSAMPLENR,   0 } // safety
 };
+
 #endif
 
 #if ANY_THERMISTOR_IS(2) // 200k bed thermistor

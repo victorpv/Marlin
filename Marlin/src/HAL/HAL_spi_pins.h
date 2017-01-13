@@ -29,6 +29,10 @@
 
   #include "HAL_AVR/spi_pins.h"
 
+#elif defined(STM32F446xx)
+
+  #include "HAL_STM32F446/spi_pins.h"
+
 #else
 
   #error Unsupported Platform!

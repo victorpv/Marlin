@@ -36,7 +36,7 @@
 #include "types.h"
 #include "utility.h"
 
-#include "WString.h"
+//#include "WString.h"
 
 #if ENABLED(PRINTCOUNTER)
   #include "printcounter.h"
@@ -44,8 +44,8 @@
   #include "stopwatch.h"
 #endif
 
-extern const char echomagic[] PROGMEM;
-extern const char errormagic[] PROGMEM;
+extern const char echomagic[]; //extern const char echomagic[] PROGMEM; //todo: HAL //implement
+extern const char errormagic[]; //extern const char errormagic[] PROGMEM; //todo: HAL //implement
 
 #define SERIAL_CHAR(x) (MYSERIAL.write(x))
 #define SERIAL_EOL SERIAL_CHAR('\n')
@@ -86,9 +86,10 @@ FORCE_INLINE void serial_echopair_P(const char* s_P, bool v) { serial_echopair_P
 FORCE_INLINE void serial_echopair_P(const char* s_P, void *v) { serial_echopair_P(s_P, (unsigned long)v); }
 
 // Things to write to serial from Program memory. Saves 400 to 2k of RAM.
-FORCE_INLINE void serialprintPGM(const char* str) {
+//todo: HAL implement
+/*FORCE_INLINE void serialprintPGM(const char* str) {
   while (char ch = pgm_read_byte(str++)) MYSERIAL.write(ch);
-}
+}*/
 
 void idle(
   #if ENABLED(FILAMENT_CHANGE_FEATURE)

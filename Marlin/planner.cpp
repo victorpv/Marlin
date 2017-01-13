@@ -740,7 +740,7 @@ void Planner::_buffer_line(const float &a, const float &b, const float &c, const
   if (de < 0) SBI(dm, E_AXIS);
 
   float esteps_float = de * volumetric_multiplier[extruder] * flow_percentage[extruder] * 0.01;
-  int32_t esteps = abs(esteps_float) + 0.5;
+  int32_t esteps = (float)abs(esteps_float) + 0.5;
 
   // Calculate the buffer head after we push this byte
   int8_t next_buffer_head = next_block_index(block_buffer_head);
@@ -1123,7 +1123,7 @@ void Planner::_buffer_line(const float &a, const float &b, const float &c, const
   }
   block->acceleration_steps_per_s2 = accel;
   block->acceleration = accel / steps_per_mm;
-  block->acceleration_rate = (long)(accel * 16777216.0 / HAL_TIMER_RATE);
+  block->acceleration_rate = (long)(((long)accel * 16777216.0) / HAL_STEPPER_TIMER_RATE);
 
   // Initial limit on the segment entry velocity
   float vmax_junction;

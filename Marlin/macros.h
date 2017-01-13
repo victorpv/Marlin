@@ -35,7 +35,7 @@
 #define CYCLES_PER_MICROSECOND (F_CPU / 1000000UL) // 16 or 20
 
 // Remove compiler warning on an unused variable
-#define UNUSED(x) (void) (x)
+#define UNUSED(x) (void) (x)  //todo: conflicts with STM32HAL
 
 // Macros to make a string from a macro
 #define STRINGIFY_(M) #M
@@ -45,7 +45,7 @@
 #define TEST(n,b) (((n)&_BV(b))!=0)
 #define SBI(n,b) (n |= _BV(b))
 #define CBI(n,b) (n &= ~_BV(b))
-#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (_BV(b))
+#define MARLIN_SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (_BV(b)) //todo: had to rename conflicts with STM32
 
 // Macros for maths shortcuts
 #ifndef M_PI

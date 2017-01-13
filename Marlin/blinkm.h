@@ -25,7 +25,9 @@
  * Created by Tim Koster, August 21 2013.
  */
 
-#include "Arduino.h"
+//todo: HAL FIX TARGET_NUCLEO_F746ZG
+/*#include "Arduino.h"
 #include "Wire.h"
 
 void SendColors(byte red, byte grn, byte blu);
+*/

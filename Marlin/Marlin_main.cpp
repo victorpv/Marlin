@@ -227,7 +227,9 @@
 #include "cardreader.h"
 #include "configuration_store.h"
 #include "language.h"
-#include "pins_arduino.h"
+//todo: move to HAL?
+//#include "pins_arduino.h"
+
 #include "math.h"
 #include "nozzle.h"
 #include "duration_t.h"

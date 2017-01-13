@@ -303,7 +303,7 @@ void Stepper::isr() {
     #ifdef SD_FINISHED_RELEASECOMMAND
       if (!cleaning_buffer_counter && (SD_FINISHED_STEPPERRELEASE)) enqueue_and_echo_commands_P(PSTR(SD_FINISHED_RELEASECOMMAND));
     #endif
-      HAL_timer_set_count (STEP_TIMER_NUM, HAL_TIMER_RATE / 10000); // Run at max speed - 10 KHz
+      HAL_timer_set_count (STEP_TIMER_NUM, HAL_STEPPER_TIMER_RATE / 10000); // Run at max speed - 10 KHz
     return;
   }
 
@@ -312,6 +312,7 @@ void Stepper::isr() {
     // Anything in the buffer?
     current_block = planner.get_current_block();
     if (current_block) {
+
       trapezoid_generator_reset();
 
       #if STEPPER_DIRECTION_DELAY > 0
@@ -346,7 +347,7 @@ void Stepper::isr() {
       // #endif
     }
     else {
-      HAL_timer_set_count (STEP_TIMER_NUM, HAL_TIMER_RATE / 1000); // Run at slow speed - 1 KHz
+      HAL_timer_set_count (STEP_TIMER_NUM, HAL_STEPPER_TIMER_RATE / 1000); // Run at slow speed - 1 KHz
       return;
     }
   }
@@ -455,7 +456,7 @@ void Stepper::isr() {
     #if STEP_PULSE_CYCLES > CYCLES_EATEN_BY_CODE
       static uint32_t pulse_start;
       #ifdef CPU_32_BIT
-        pulse_start = HAL_timer_get_current_count(STEPPER_TIMER);
+        pulse_start = HAL_timer_get_current_count(STEP_TIMER_NUM);
       #else
         pulse_start = TCNT0;
       #endif
@@ -492,8 +493,8 @@ void Stepper::isr() {
     #if STEP_PULSE_CYCLES > CYCLES_EATEN_BY_CODE
       #ifdef CPU_32_BIT
         // MINIMUM_STEPPER_PULSE = 0... pulse width = 820ns, 1... 1.5μs, 2... 2.24μs, 3... 3.34μs, 4... 4.08μs, 5... 5.18μs
-        while (HAL_timer_get_current_count(STEPPER_TIMER) - pulse_start < (STEP_PULSE_CYCLES - CYCLES_EATEN_BY_CODE) / STEPPER_TIMER_PRESCALE) { /* nada */ }
-        pulse_start = HAL_timer_get_current_count(STEPPER_TIMER);
+        while (HAL_timer_get_current_count(STEP_TIMER_NUM) - pulse_start < (STEP_PULSE_CYCLES - CYCLES_EATEN_BY_CODE) / STEPPER_TIMER_PRESCALE) { /* nada */ }
+        pulse_start = HAL_timer_get_current_count(STEP_TIMER_NUM);
       #else
         while ((uint32_t)(TCNT0 - pulse_start) < STEP_PULSE_CYCLES - CYCLES_EATEN_BY_CODE) { /* nada */ }
       #endif
@@ -534,7 +535,7 @@ void Stepper::isr() {
     #ifdef CPU_32_BIT
       // For a minimum pulse time wait before stopping low pulses
       #if STEP_PULSE_CYCLES > CYCLES_EATEN_BY_CODE
-        if (i < step_loops - 1) while (HAL_timer_get_current_count(STEPPER_TIMER) - pulse_start < (STEP_PULSE_CYCLES - CYCLES_EATEN_BY_CODE) / STEPPER_TIMER_PRESCALE) { /* nada */ }
+        if (i < step_loops - 1) while (HAL_timer_get_current_count(STEP_TIMER_NUM) - pulse_start < (STEP_PULSE_CYCLES - CYCLES_EATEN_BY_CODE) / STEPPER_TIMER_PRESCALE) { /* nada */ }
       #endif
     #endif
   }
@@ -562,11 +563,11 @@ void Stepper::isr() {
   // Calculate new timer value
   if (step_events_completed <= (uint32_t)current_block->accelerate_until) {
 
-    #ifdef CPU_32_BIT
-      MultiU32X32toH32(acc_step_rate, acceleration_time, current_block->acceleration_rate);
-    #else
-      MultiU24X32toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
-    #endif
+    //#ifdef CPU_32_BIT
+      MultiU32X32toH32(acc_step_rate, acceleration_time, current_block->acceleration_rate);  //todo: figure out why I had to compensate by a multiplying by 256 (1<<8) the macro wrong? or just a symptom
+    //#else
+    //  MultiU24X32toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
+    //#endif
     acc_step_rate += current_block->initial_rate;
 
     // upper limit
@@ -616,15 +617,15 @@ void Stepper::isr() {
     #endif
   }
   else if (step_events_completed > (uint32_t)current_block->decelerate_after) {
-    #ifdef CPU_32_BIT
+    //#ifdef CPU_32_BIT
       HAL_TIMER_TYPE step_rate;
-      MultiU32X32toH32(step_rate, deceleration_time, current_block->acceleration_rate);
-    #else
-      uint16_t step_rate;
-      MultiU24X32toH16(step_rate, deceleration_time, current_block->acceleration_rate);
-    #endif
+      MultiU32X32toH32(step_rate, deceleration_time, current_block->acceleration_rate); //todo: figure out why I had to compensate by a multiplying by 256 (1<<8) the macro wrong? or just a symptom
+    //#else
+    //  uint16_t step_rate;
+    //  MultiU24X32toH16(step_rate, deceleration_time, current_block->acceleration_rate);
+   // #endif
 
-    if (step_rate < acc_step_rate) { // Still decelerating?
+    if (step_rate <= acc_step_rate) { // Still decelerating? //todo: HAL changed to <=
       step_rate = acc_step_rate - step_rate;
       NOLESS(step_rate, current_block->final_rate);
     }
@@ -688,10 +689,11 @@ void Stepper::isr() {
   }
 
   #ifdef CPU_32_BIT
+  //todo: undo comment out
     // Make sure stepper interrupt does not monopolise CPU by adjusting count to give about 8 us room
-    uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM);
-    uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
-    HAL_timer_set_count(STEP_TIMER_NUM, stepper_timer_count < stepper_timer_current_count ? stepper_timer_current_count : stepper_timer_count);
+ //   uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM);
+ //   uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
+ //   HAL_timer_set_count(STEP_TIMER_NUM, stepper_timer_count < stepper_timer_current_count ? stepper_timer_current_count : stepper_timer_count);
   #else
     NOLESS(OCR1A, TCNT1 + 16);
   #endif

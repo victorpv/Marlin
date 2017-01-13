@@ -118,3 +118,4 @@ applet/
 #PlatformIO files/dirs
 .pioenvs
 .piolib
+/Debug/
