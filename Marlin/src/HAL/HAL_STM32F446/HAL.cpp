@@ -32,6 +32,8 @@
 // --------------------------------------------------------------------------
 
 #include "../HAL.h"
+//#include "usb_device.h"
+#include "vcp.h"
 
 // --------------------------------------------------------------------------
 // Externals
@@ -58,7 +60,7 @@ uint32_t HAL_adc_result;
 /* DMA serial wrapper variables */
 const uint16_t rxbuffer_size = 256; //256 byte dma receive buffer
 uint8_t rxbuffer[rxbuffer_size];
-HalSerial usb_Serial_connection(&huart1, rxbuffer, rxbuffer_size);
+HalSerial usb_Serial_connection(rxbuffer_size);
 
 /* DMA ADC buffer for all pins */
 const uint8_t adc_pins = 6;
@@ -79,7 +81,7 @@ uint16_t adc_readings[adc_pins] = {0};
 void HAL_init() {
   timers_init();
 
-  HAL_UART_Receive_DMA(&huart1, rxbuffer, rxbuffer_size);
+  //HAL_UART_Receive_DMA(&huart1, rxbuffer, rxbuffer_size);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_readings, 4);
 
   //Enable the used PWM channels
@@ -111,17 +113,6 @@ extern "C" int HAL_main() {
         loop();
     }
 }
-
-//extern "C" int __io_putchar(int ch) {
-//	HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100);
-//	return ch;
-//}
-//
-//extern "C" int __io_getchar() {
-//	int ch = 0;
-//	HAL_UART_Receive(&huart1, (uint8_t *)&ch, 1, 100);
-//	return ch;
-//}
 
 //todo: HAL implement
 void pinMode(int pin_number, int mode) {

@@ -44,6 +44,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 /* USER CODE BEGIN INCLUDE */
+#include "vcp.h"
+#include "usb_ringbuffer.h"
+
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -70,8 +73,9 @@
 /* USER CODE BEGIN PRIVATE_DEFINES */
 /* Define size for the receive and transmit buffer over CDC */
 /* It's up to user to redefine and/or remove those define */
-#define APP_RX_DATA_SIZE  4
-#define APP_TX_DATA_SIZE  4
+
+
+TIM_HandleTypeDef  TimHandle;
 /* USER CODE END PRIVATE_DEFINES */
 /**
   * @}
@@ -99,6 +103,15 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
+uint32_t BuffLength;
+
+volatile uint32_t rxReadIndex = 0;
+volatile uint32_t rxWriteIndex = 0;
+volatile uint32_t rxBuffLength = APP_RX_DATA_SIZE;
+uint32_t UserTxBufPtrIn = 0;/* Increment this pointer or roll it back to
+                               start address when data are received over USART */
+uint32_t UserTxBufPtrOut = 0; /* Increment this pointer or roll it back to
+                                 start address when data are sent over USB */
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -125,6 +138,7 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_FS  (uint8_t* pbuf, uint32_t *Len);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
+static void TIM_Config(void);
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
@@ -149,6 +163,18 @@ USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
 static int8_t CDC_Init_FS(void)
 { 
   /* USER CODE BEGIN 3 */ 
+
+  /*##-3- Configure the TIM Base generation  #################################*/
+  //TIM_Config();
+
+  /*##-4- Start the TIM Base generation in interrupt mode ####################*/
+  /* Start Channel1 */
+  //if(HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK)
+  //{
+	/* Starting Error */
+	//Error_Handler();
+  //}
+
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
@@ -261,9 +287,16 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-  return (USBD_OK);
+	volatile uint32_t counter = 0;
+
+	while(counter < *Len){
+		UserRxBufferFS[rxWriteIndex] = Buf[counter];
+		counter++, rxWriteIndex++;
+		if(rxWriteIndex  == rxBuffLength)
+			rxWriteIndex  = 0;
+	}
+
+	return (USBD_OK);
   /* USER CODE END 6 */ 
 }
 
@@ -280,19 +313,81 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
   */
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 {
-  uint8_t result = USBD_OK;
-  /* USER CODE BEGIN 7 */ 
-  USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
-  if (hcdc->TxState != 0){
-    return USBD_BUSY;
-  }
-  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
-  result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
-  /* USER CODE END 7 */ 
-  return result;
+	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+	{
+		return USBD_FAIL;
+	}
+
+	uint8_t result = USBD_OK;
+	/* USER CODE BEGIN 7 */
+	USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
+	if (hcdc->TxState != 0){
+	return USBD_BUSY;
+	}
+	USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
+	result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+	/* USER CODE END 7 */
+	return result;
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
+static void TIM_Config(void)
+{
+  /* Set TIMx instance */
+  TimHandle.Instance = TIMx;
+
+  /* Initialize TIM6 peripheral as follow:
+       + Period = 10000 - 1
+       + Prescaler = ((SystemCoreClock/2)/10000) - 1
+       + ClockDivision = 0
+       + Counter direction = Up
+  */
+  TimHandle.Init.Period = (CDC_POLLING_INTERVAL*1000) - 1;
+  TimHandle.Init.Prescaler = (((HAL_RCC_GetSysClockFreq()/2)/1000000)-1);
+  TimHandle.Init.ClockDivision = 0;
+  TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
+  if(HAL_TIM_Base_Init(&TimHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief  TIM period elapsed callback
+  * @param  htim: TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  uint32_t buffptr;
+  uint32_t buffsize;
+
+  if(UserTxBufPtrOut != UserTxBufPtrIn)
+  {
+    if(UserTxBufPtrOut > UserTxBufPtrIn) /* Rollback */
+    {
+      buffsize = APP_TX_DATA_SIZE - UserTxBufPtrOut;
+    }
+    else
+    {
+      buffsize = UserTxBufPtrIn - UserTxBufPtrOut;
+    }
+
+    buffptr = UserTxBufPtrOut;
+
+    USBD_CDC_SetTxBuffer(&hUsbDeviceFS, (uint8_t*)&UserTxBufferFS[buffptr], buffsize);
+
+    if(USBD_CDC_TransmitPacket(&hUsbDeviceFS) == USBD_OK)
+    {
+      UserTxBufPtrOut += buffsize;
+      if (UserTxBufPtrOut == APP_RX_DATA_SIZE)
+      {
+        UserTxBufPtrOut = 0;
+      }
+    }
+  }
+}
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**

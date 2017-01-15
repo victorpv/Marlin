@@ -8,20 +8,15 @@
 #ifndef HAL_STM32F446_SERIAL_H_
 #define HAL_STM32F446_SERIAL_H_
 
-#include "usart.h"
+//#include "usart.h"
+#include "usb_ringbuffer.h"
 
 class HalSerial {
 public:
-    uint8_t *buffer;
     uint16_t buffer_size;
-    uint16_t tail;
-    UART_HandleTypeDef *port;
 
-	HalSerial(UART_HandleTypeDef *huart, uint8_t *rxbuffer, uint16_t rxbuffer_size) {
-	    buffer = rxbuffer;
+	HalSerial(uint16_t rxbuffer_size) {
 	    buffer_size = rxbuffer_size;
-	    port = huart;
-	    tail = 0;
 	}
 
 	void begin(int32_t baud) {
@@ -29,10 +24,10 @@ public:
 	}
 
 	char read() {
-	    uint8_t c = buffer[tail++];
-	    if(tail == buffer_size) {
-	        tail = 0;
-	    }
+		uint8_t c = UserRxBufferFS[rxReadIndex++];
+		if(rxReadIndex == rxBuffLength) {
+			rxReadIndex = 0;
+		}
 		return c;
 	}
 
@@ -44,11 +39,10 @@ public:
 	//NDTR amount of dma block transfer remaining, will restart at 0
 	//perhaps there is a HAL function to retrieve this
 	uint16_t available() {
-	    uint16_t head = (buffer_size - port->hdmarx->Instance->NDTR);
-		if(head < tail) {
-		    return (buffer_size + head) - tail;
+		if(rxWriteIndex < rxReadIndex) {
+			return (rxBuffLength + rxWriteIndex) - rxReadIndex;
 		}
-		return head - tail;
+		return rxWriteIndex - rxReadIndex;
 	}
 
 	void flush() {

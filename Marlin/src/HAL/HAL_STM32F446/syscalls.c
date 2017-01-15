@@ -35,6 +35,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include "usb_device.h"
+#include "vcp.h"
 
 
 /* Variables */
@@ -43,8 +44,21 @@ extern int errno;
 #define FreeRTOS
 #define MAX_STACK_SIZE 0x2000
 
-extern int __io_putchar(int ch) __attribute__((weak));
-extern int __io_getchar(void) __attribute__((weak));
+//extern int __io_putchar(int ch) __attribute__((weak));
+//extern int __io_getchar(void) __attribute__((weak));
+
+
+int __io_putchar(int ch) {
+	VCP_write((uint8_t *)&ch, 1);
+	return ch;
+}
+
+int __io_getchar() {
+	int ch = 0;
+	uint32_t len = 1;
+	//VCP_read((unsigned char *)&ch, &len);
+	return ch;
+}
 
 #ifndef FreeRTOS
   register char * stack_ptr asm("sp");
@@ -94,15 +108,15 @@ return len;
 int _write(int file, char *ptr, int len)
 {
 
-	return CDC_Transmit_FS(ptr, len);
+	//return VCP_write(ptr, len);
 
-//	int DataIdx;
-//
-//	for (DataIdx = 0; DataIdx < len; DataIdx++)
-//	{
-//		__io_putchar(*ptr++);
-//	}
-//	return len;
+	int DataIdx;
+
+	for (DataIdx = 0; DataIdx < len; DataIdx++)
+	{
+		__io_putchar(*ptr++);
+	}
+	return len;
 }
 /*
 caddr_t _sbrk(int incr)

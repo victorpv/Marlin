@@ -110,7 +110,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   //while(1) {
-  for(int i = 0; i < 50; i++) {
+  for(int i = 0; i < 25; i++) {
 	  uint8_t HiMsg[] = "why hello there!\r\n";
 	  CDC_Transmit_FS(HiMsg, strlen(HiMsg));
 	  HAL_Delay(250);
