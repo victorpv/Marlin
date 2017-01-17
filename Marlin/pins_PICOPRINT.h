@@ -34,8 +34,8 @@
   #error "RUMBA supports up to 3 hotends / E-steppers. Comment this line to keep going."
 #endif
 
-#define DEFAULT_MACHINE_NAME "Rumba"
-#define BOARD_NAME           "Rumba"
+#define DEFAULT_MACHINE_NAME "PicoPrint"
+#define BOARD_NAME           "PicoPrint"
 
 #define PORTA 0
 #define PORTB 1
@@ -64,7 +64,7 @@
 // Z Probe (when not Z_MIN_PIN)
 //
 #ifndef Z_MIN_PROBE_PIN
-  #define Z_MIN_PROBE_PIN  32
+  #define Z_MIN_PROBE_PIN  _STM32_PIN(PORTA, 4)
 #endif
 
 //
@@ -125,17 +125,10 @@
 
 #define TEMP_2_PIN       _STM32_PIN(PORTC, 1)   // Analog Input
 
-#define TEMP_3_PIN       _STM32_PIN(PORTC, 0)   // Analog Input
+#define TEMP_3_PIN       -1//_STM32_PIN(PORTC, 0)   // Analog Input
 
+#define TEMP_BED_PIN     _STM32_PIN(PORTC, 0)   // Analog Input
 
-// optional for extruder 4 or chamber:
-//#define TEMP_X_PIN         12   // Analog Input (default connector for thermistor *T3* on rumba board is used)
-
-#if TEMP_SENSOR_BED == -1
-  #define TEMP_BED_PIN      7   // Analog Input (connector *K3* on RUMBA thermocouple ADD ON is used <-- this can not be used when TEMP_SENSOR_2 is defined as thermocouple)
-#else
-  #define TEMP_BED_PIN     11   // Analog Input (default connector for thermistor *THB* on rumba board is used)
-#endif
 
 //
 // Heaters / Fans

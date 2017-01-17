@@ -26,9 +26,9 @@
 */
 
 /**
- * Description: Fast IO functions for NUCLEO_F746ZG
+ * Description: Fast IO functions for STM32F446
  *
- * For NUCLEO_F746ZG_H
+ * For STM32F446_H
  */
 
 #ifndef	_FASTIO_STM32F446_H
@@ -57,16 +57,24 @@ struct PinInfo {
 #define LOW 0
 #define HIGH 1
 
-//todo: HAL implement, pin config is at init only atm
-#define OUTPUT 0
-#define INPUT 1
+typedef enum WiringPinMode {
+    OUTPUT,
+    OUTPUT_OPEN_DRAIN,
+	INPUT,
+    INPUT_ANALOG,
+    INPUT_PULLUP,
+    INPUT_PULLDOWN,
+    INPUT_FLOATING,
+    PWM,
+    PWM_OPEN_DRAIN,
+} WiringPinMode;
 
 
 /// Read a pin
 #define _READ(IO) HAL_GPIO_ReadPin(pin_map[IO].port, pin_map[IO].pin)
-/// Write to a pin //todo: difference?
-#define _WRITE_VAR(IO, v) HAL_GPIO_WritePin(pin_map[IO].port, pin_map[IO].pin, (GPIO_PinState(v)))
-#define _WRITE(IO, v) HAL_GPIO_WritePin(pin_map[IO].port, pin_map[IO].pin, (GPIO_PinState(v)))
+/// Write to a pin
+#define _WRITE_VAR(IO, v) digitalWrite(IO,v)  //these have overheads that are probably not good in the stepper ISR //HAL_GPIO_WritePin(pin_map[IO].port, pin_map[IO].pin, (GPIO_PinState(v)))
+#define _WRITE(IO, v) digitalWrite(IO,v)      //HAL_GPIO_WritePin(pin_map[IO].port, pin_map[IO].pin, (GPIO_PinState(v)))
 /// toggle a pin
 #define _TOGGLE(IO)  HAL_GPIO_TogglePin(pin_map[IO].port, pin_map[IO].pin)
 
@@ -77,14 +85,14 @@ struct PinInfo {
  */
 /// set pin as input
 //todo: HAL implement
-#define _SET_INPUT(IO)
+#define _SET_INPUT(IO) pinMode(IO, INPUT)
 
 /// set pin as output
 //todo: HAL implement
-#define _SET_OUTPUT(IO)
+#define _SET_OUTPUT(IO) pinMode(IO, OUTPUT)
 
 /// set pin as input with pullup mode
-#define _PULLUP(IO, v)  {}//{ pinMode(IO, (v!=LOW ? INPUT_PULLUP : INPUT)); }
+#define _PULLUP(IO, v)  { pinMode(IO, (v!=LOW ? INPUT_PULLUP : INPUT)); }
 
 /// check if pin is an input
 //#define _GET_INPUT(IO)
@@ -138,8 +146,8 @@ struct PinInfo {
 pins
 */
 const PinInfo pin_map[] = {
-  { GPIOA, GPIO_PIN_0 },
-  { GPIOA, GPIO_PIN_1 },
+  { GPIOA, GPIO_PIN_0, &htim5, TIM_CHANNEL_1 },
+  { GPIOA, GPIO_PIN_1, &htim5, TIM_CHANNEL_2 },
   { GPIOA, GPIO_PIN_2, &htim5, TIM_CHANNEL_3 },
   { GPIOA, GPIO_PIN_3 },
   { GPIOA, GPIO_PIN_4 },
@@ -198,9 +206,9 @@ const PinInfo pin_map[] = {
   { GPIOD, GPIO_PIN_9 },
   { GPIOD, GPIO_PIN_10 },
   { GPIOD, GPIO_PIN_11 },
-  { GPIOD, GPIO_PIN_12 },
-  { GPIOD, GPIO_PIN_13 },
-  { GPIOD, GPIO_PIN_14 },
+  { GPIOD, GPIO_PIN_12, &htim4, TIM_CHANNEL_1 },
+  { GPIOD, GPIO_PIN_13, &htim4, TIM_CHANNEL_2 },
+  { GPIOD, GPIO_PIN_14, &htim4, TIM_CHANNEL_3 },
   { GPIOD, GPIO_PIN_15, &htim4, TIM_CHANNEL_4 },
   { GPIOE, GPIO_PIN_0 },
   { GPIOE, GPIO_PIN_1 },

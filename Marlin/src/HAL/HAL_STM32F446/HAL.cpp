@@ -114,13 +114,98 @@ extern "C" int HAL_main() {
     }
 }
 
-//todo: HAL implement
+
 void pinMode(int pin_number, int mode) {
-    //pin_map[pin_number].pin;
+	uint8_t i;
+
+	uint32_t _mode, _type, _pupd;
+	bool setType = false;
+
+	//PWM capable pins should use PWM hardware when set as outputs
+	if(pin_map[pin_number].pwmTimer) {
+		switch (mode) {
+		case OUTPUT:
+			mode = PWM;
+			break;
+		case OUTPUT_OPEN_DRAIN:
+			mode = PWM_OPEN_DRAIN;
+			break;
+		}
+	}
+
+	//set pin as input, output, alternate or analog
+	switch (mode) {
+	case INPUT:
+	case INPUT_PULLUP:
+	case INPUT_PULLDOWN:
+	case INPUT_FLOATING:
+		_mode = GPIO_MODE_INPUT;
+		break;
+	case INPUT_ANALOG:
+		_mode = GPIO_MODE_ANALOG;
+		break;
+	case OUTPUT:
+	case OUTPUT_OPEN_DRAIN:
+		_mode = GPIO_MODE_OUTPUT_PP;
+		break;
+	case PWM:
+	case PWM_OPEN_DRAIN:
+		_mode = GPIO_MODE_AF_PP;
+	}
+
+	//set pullups/pulldowns
+	switch (mode) {
+	case INPUT_PULLUP:
+		_pupd = GPIO_PULLUP;
+		break;
+	case INPUT_PULLDOWN:
+		_pupd = GPIO_PULLDOWN;
+		break;
+	default:
+		_pupd = GPIO_NOPULL;
+		break;
+	}
+
+	//set push-pull/open-drain
+	switch (mode) {
+	case OUTPUT:
+	case PWM:
+		_type = 0;
+		setType = true;
+		break;
+	case OUTPUT_OPEN_DRAIN:
+	case PWM_OPEN_DRAIN:
+		_type = 1;
+		setType = true;
+		break;
+	}
+
+	/* Go through all pins */
+	for (i = 0x00; i < 0x10; i++) {
+	/* Pin is set */
+		if (pin_map[pin_number].pin & (1 << i)) {
+		/* Set 00 bits combination for input */
+
+			//set pin MODE
+			pin_map[pin_number].port->MODER = (pin_map[pin_number].port->MODER & ~(0x03 << (2 * i))) | (_mode << (2 * i));
+
+			//set pin pullup/pulldown
+			pin_map[pin_number].port->PUPDR = (pin_map[pin_number].port->PUPDR & ~(0x03 << (2 * i))) | ((uint32_t)(_pupd << (2 * i)));
+
+			//set pin push-pull/open-drain
+			if(setType) {
+				pin_map[pin_number].port->OTYPER = (pin_map[pin_number].port->PUPDR & ~(0x01 << (i))) | ((uint32_t)(_type << (i)));
+			}
+		}
+	}
 }
 
-void digitalWrite(int pin, int pin_status) {
-  HAL_GPIO_WritePin(pin_map[pin].port, pin_map[pin].pin, (GPIO_PinState(pin_status)));
+void digitalWrite(int pin_number, int pin_status) {
+  if (pin_map[pin_number].pwmTimer) {
+    __HAL_TIM_SetCompare(pin_map[pin_number].pwmTimer, pin_map[pin_number].pwmTimerChannel,(pin_status? 255 : 0));
+  } else {
+    HAL_GPIO_WritePin(pin_map[pin_number].port, pin_map[pin_number].pin, (GPIO_PinState(pin_status)));
+  }  
 }
 
 void analogWrite(int pin_number, int pin_status) {
