@@ -349,7 +349,7 @@ void HAL_adc_start_conversion (uint8_t adc_pin)
 	case TEMP_2_PIN:
 		active_adc_pin = 2;
 		break;
-	case TEMP_3_PIN:
+	case TEMP_BED_PIN:
 		active_adc_pin = 3;
 		break;
 	}
