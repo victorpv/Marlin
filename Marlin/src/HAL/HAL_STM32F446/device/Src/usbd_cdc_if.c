@@ -112,6 +112,10 @@ uint32_t UserTxBufPtrIn = 0;/* Increment this pointer or roll it back to
                                start address when data are received over USART */
 uint32_t UserTxBufPtrOut = 0; /* Increment this pointer or roll it back to
                                  start address when data are sent over USB */
+
+uint8_t DummyRxBufferFS[APP_RX_DATA_SIZE];
+uint8_t lineCodingBuff[7];
+
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -138,7 +142,6 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_FS  (uint8_t* pbuf, uint32_t *Len);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
-static void TIM_Config(void);
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
@@ -177,7 +180,7 @@ static int8_t CDC_Init_FS(void)
 
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, DummyRxBufferFS);
   return (USBD_OK);
   /* USER CODE END 3 */ 
 }
@@ -246,11 +249,23 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
   case CDC_SET_LINE_CODING:   
-	
+    lineCodingBuff[0] = pbuf[0];
+    lineCodingBuff[1] = pbuf[1];
+    lineCodingBuff[2] = pbuf[2];
+    lineCodingBuff[3] = pbuf[3];
+    lineCodingBuff[4] = pbuf[4];
+    lineCodingBuff[5] = pbuf[5];
+    lineCodingBuff[6] = pbuf[6];
     break;
 
   case CDC_GET_LINE_CODING:     
-
+	pbuf[0] = lineCodingBuff[0];
+	pbuf[1] = lineCodingBuff[1];
+	pbuf[2] = lineCodingBuff[2];
+	pbuf[3] = lineCodingBuff[3];
+	pbuf[4] = lineCodingBuff[4];
+	pbuf[5] = lineCodingBuff[5];
+	pbuf[6] = lineCodingBuff[6];
     break;
 
   case CDC_SET_CONTROL_LINE_STATE:
@@ -332,64 +347,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 	return result;
 }
 
-/* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
-static void TIM_Config(void)
-{
-  /* Set TIMx instance */
-  TimHandle.Instance = TIMx;
 
-  /* Initialize TIM6 peripheral as follow:
-       + Period = 10000 - 1
-       + Prescaler = ((SystemCoreClock/2)/10000) - 1
-       + ClockDivision = 0
-       + Counter direction = Up
-  */
-  TimHandle.Init.Period = (CDC_POLLING_INTERVAL*1000) - 1;
-  TimHandle.Init.Prescaler = (((HAL_RCC_GetSysClockFreq()/2)/1000000)-1);
-  TimHandle.Init.ClockDivision = 0;
-  TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-  if(HAL_TIM_Base_Init(&TimHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief  TIM period elapsed callback
-  * @param  htim: TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  uint32_t buffptr;
-  uint32_t buffsize;
-
-  if(UserTxBufPtrOut != UserTxBufPtrIn)
-  {
-    if(UserTxBufPtrOut > UserTxBufPtrIn) /* Rollback */
-    {
-      buffsize = APP_TX_DATA_SIZE - UserTxBufPtrOut;
-    }
-    else
-    {
-      buffsize = UserTxBufPtrIn - UserTxBufPtrOut;
-    }
-
-    buffptr = UserTxBufPtrOut;
-
-    USBD_CDC_SetTxBuffer(&hUsbDeviceFS, (uint8_t*)&UserTxBufferFS[buffptr], buffsize);
-
-    if(USBD_CDC_TransmitPacket(&hUsbDeviceFS) == USBD_OK)
-    {
-      UserTxBufPtrOut += buffsize;
-      if (UserTxBufPtrOut == APP_RX_DATA_SIZE)
-      {
-        UserTxBufPtrOut = 0;
-      }
-    }
-  }
-}
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**

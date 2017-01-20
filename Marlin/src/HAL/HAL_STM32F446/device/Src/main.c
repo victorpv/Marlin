@@ -109,13 +109,18 @@ int main(void)
   MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
-  //while(1) {
+
+  HAL_Delay(1000);
+
+  //temporary workaround so there's time to connect via USB before Marlin starts
+  //doesn't really matter if not, but it's nice to catch Marlin's startup info
+  //could probably check and wait until COM port is opened?
   for(int i = 0; i < 25; i++) {
+	  HAL_Delay(250);
 	  uint8_t HiMsg[] = "why hello there!\r\n";
 	  CDC_Transmit_FS(HiMsg, strlen(HiMsg));
-	  HAL_Delay(250);
+
   }
-  //}
 
   HAL_main();
   /* USER CODE END 2 */

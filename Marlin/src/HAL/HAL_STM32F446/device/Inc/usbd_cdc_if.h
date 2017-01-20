@@ -67,18 +67,6 @@
   */ 
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
- /* Definition for TIMx clock resources */
- #define TIMx                             TIM6
- #define TIMx_CLK_ENABLE                  __HAL_RCC_TIM6_CLK_ENABLE
-
- /* Definition for TIMx's NVIC */
- #define TIMx_IRQn                        TIM6_IRQn
- #define TIMx_IRQHandler                  TIM6_IRQHandler
-
- /* Periodically, the state of the buffer "UserTxBuffer" is checked.
-    The period depends on CDC_POLLING_INTERVAL */
- #define CDC_POLLING_INTERVAL             5 /* in ms. The max is 65 and the min is 1 */
-
  extern USBD_CDC_ItfTypeDef  USBD_CDC_fops;
 
 /* USER CODE END EXPORTED_DEFINES */
