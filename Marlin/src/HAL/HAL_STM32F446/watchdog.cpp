@@ -28,14 +28,23 @@
 
     #include "watchdog.h"
 
-    // Initialize watchdog with a 4 second interrupt time
-    void watchdogSetup(void) {
-      //watchdogEnable (4000);
+    void watchdog_init() {
+		hiwdg.Instance = IWDG;
+		hiwdg.Init.Prescaler = IWDG_PRESCALER_32;	//32kHz LSI clock and 32x prescalar = 1024Hz IWDG clock
+		hiwdg.Init.Reload = 4095; 					//4095 counts = 4 seconds at 1024Hz
+		if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+		{
+			Error_Handler();
+		}
     }
 
-    // TODO: implement for Due
-    void watchdog_init() {
-      // this is a stub
+    void watchdog_reset() {
+		/* Refresh IWDG: reload counter */
+		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK)
+		{
+			/* Refresh Error */
+			Error_Handler();
+		}
     }
 
   #endif //USE_WATCHDOG

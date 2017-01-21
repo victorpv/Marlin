@@ -20,15 +20,14 @@
  *
  */
 
-#ifndef WATCHDOG_TARGET_NUCLEO_F746ZG_H
-#define WATCHDOG_TARGET_NUCLEO_F746ZG_H
+#ifndef WATCHDOG_TARGET_STM32F446_H
+#define WATCHDOG_TARGET_STM32F446_H
 
-//#include "../../../Marlin.h"
+#include "../HAL.h"
 
-//TODO: Implement NUCLEO_F746ZG
+extern IWDG_HandleTypeDef hiwdg;
 
 void watchdog_init();
+void watchdog_reset();
 
-inline void watchdog_reset() { /*watchdogReset();*/ }
-
-#endif /* WATCHDOG_DUE_H */
+#endif /* WATCHDOG_TARGET_STM32F446_H */
