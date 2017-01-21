@@ -280,20 +280,24 @@ void sei(void)
 }
 
 void HAL_clear_reset_source (void)
-{ }
-//todo: implement this
+{
+	__HAL_RCC_CLEAR_RESET_FLAGS();
+}
+
 uint8_t HAL_get_reset_source (void)
 {
- /* switch ( (RSTC->RSTC_SR >> 8) & 7)
-  {
-    case 0: return RST_POWER_ON; break;
-    case 1: return RST_BACKUP; break;
-    case 2: return RST_WATCHDOG; break;
-    cstuck in ase 3: return RST_SOFTWARE; break;
-    case 4: return RST_EXTERNAL; break;
-    default:
-      return 0;
-  }*/
+ if(__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET)
+	return RST_WATCHDOG;
+
+ if(__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) != RESET)
+	 return RST_SOFTWARE;
+
+ if(__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+	 return RST_EXTERNAL;
+
+ if(__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST) != RESET)
+	 return RST_POWER_ON;
+
 	return 0;
 }
 
