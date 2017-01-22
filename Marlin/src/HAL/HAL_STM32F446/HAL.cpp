@@ -32,7 +32,6 @@
 // --------------------------------------------------------------------------
 
 #include "../HAL.h"
-//#include "usb_device.h"
 #include "vcp.h"
 
 // --------------------------------------------------------------------------
@@ -229,21 +228,18 @@ long millis() {
 	return HAL_GetTick();
 }
 
+extern TIM_HandleTypeDef htim14;
+uint64_t micros() {
+    return (uint64_t)(HAL_GetTick() * 1000) + __HAL_TIM_GetCounter(&htim14);
+}
+
 void delay(int milis) {
 	HAL_Delay(milis);
 }
 
-void delayMicroseconds(int us) {
-    static uint32_t i, j;
-    static uint32_t freq;
-    freq = 5;// HAL_RCC_GetSysClockFreq() / 1000000; // todo: speed up lcd without the fudge? how long is this actually
-
-    for (i = 0; i < us;) {
-        for (j = 0; j < freq; ++j) {
-            ++j;
-        }
-        ++i;
-    }
+void delayMicroseconds(unsigned long us) {
+	unsigned long endTime = micros() + us;
+	while(micros() - endTime > 0);
 }
 
 long constrain(long val, long min, long max) {

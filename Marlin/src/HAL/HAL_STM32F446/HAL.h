@@ -164,6 +164,7 @@ void serialprintPGM(const char *);
 void sprintf_P(char *, const char *, ...);
 bool strstr_P(const char *, const char *);
 long millis();
+uint64_t micros();
 int freeMemory(void);
 
 /*
