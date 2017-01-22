@@ -54,7 +54,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "status_led.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -110,12 +110,13 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-  HAL_Delay(1000);
+  HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_3);
+  pulse_status_led(2);
 
   //temporary workaround so there's time to connect via USB before Marlin starts
   //doesn't really matter if not, but it's nice to catch Marlin's startup info
   //could probably check and wait until COM port is opened?
-  for(int i = 0; i < 25; i++) {
+  for(int i = 0; i < 10; i++) {
 	  HAL_Delay(250);
 	  uint8_t HiMsg[] = "why hello there!\r\n";
 	  CDC_Transmit_FS(HiMsg, strlen(HiMsg));
