@@ -615,16 +615,16 @@
 // The number of linear motions that can be in the plan at any give time.
 // THE BLOCK_BUFFER_SIZE NEEDS TO BE A POWER OF 2, i.g. 8,16,32 because shifts and ors are used to do the ring-buffering.
 #if ENABLED(SDSUPPORT)
-  #define BLOCK_BUFFER_SIZE 16 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
+  #define BLOCK_BUFFER_SIZE 32 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
 #else
-  #define BLOCK_BUFFER_SIZE 16 // maximize block buffer
+  #define BLOCK_BUFFER_SIZE 32 // maximize block buffer
 #endif
 
 // @section serial
 
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
-#define BUFSIZE 4
+#define BUFSIZE 64
 
 // Transfer Buffer Size
 // To save 386 bytes of PROGMEM (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -633,7 +633,7 @@
 // For debug-echo: 128 bytes for the optimal speed.
 // Other output doesn't need to be that speedy.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256]
-#define TX_BUFFER_SIZE 0
+#define TX_BUFFER_SIZE 64
 
 // Enable an emergency-command parser to intercept certain commands as they
 // enter the serial receive buffer, so they cannot be blocked.
@@ -706,58 +706,58 @@
 
 // @section tmc
 
-//#define HAVE_TMCDRIVER
+#define HAVE_TMCDRIVER
 #if ENABLED(HAVE_TMCDRIVER)
 
-  //#define X_IS_TMC
+  #define X_IS_TMC
   //#define X2_IS_TMC
-  //#define Y_IS_TMC
+  #define Y_IS_TMC
   //#define Y2_IS_TMC
-  //#define Z_IS_TMC
+  #define Z_IS_TMC
   //#define Z2_IS_TMC
-  //#define E0_IS_TMC
-  //#define E1_IS_TMC
+  #define E0_IS_TMC
+  #define E1_IS_TMC
   //#define E2_IS_TMC
   //#define E3_IS_TMC
 
-  #define X_MAX_CURRENT     1000 // in mA
-  #define X_SENSE_RESISTOR    91 // in mOhms
+  #define X_MAX_CURRENT      500 // in mA
+  #define X_SENSE_RESISTOR    50 // in mOhms
   #define X_MICROSTEPS        16 // number of microsteps
 
-  #define X2_MAX_CURRENT    1000
-  #define X2_SENSE_RESISTOR   91
+  #define X2_MAX_CURRENT     500
+  #define X2_SENSE_RESISTOR   50
   #define X2_MICROSTEPS       16
 
-  #define Y_MAX_CURRENT     1000
-  #define Y_SENSE_RESISTOR    91
+  #define Y_MAX_CURRENT      500
+  #define Y_SENSE_RESISTOR    50
   #define Y_MICROSTEPS        16
 
-  #define Y2_MAX_CURRENT    1000
-  #define Y2_SENSE_RESISTOR   91
+  #define Y2_MAX_CURRENT     500
+  #define Y2_SENSE_RESISTOR   50
   #define Y2_MICROSTEPS       16
 
-  #define Z_MAX_CURRENT     1000
-  #define Z_SENSE_RESISTOR    91
+  #define Z_MAX_CURRENT      500
+  #define Z_SENSE_RESISTOR    50
   #define Z_MICROSTEPS        16
 
-  #define Z2_MAX_CURRENT    1000
-  #define Z2_SENSE_RESISTOR   91
+  #define Z2_MAX_CURRENT     500
+  #define Z2_SENSE_RESISTOR   50
   #define Z2_MICROSTEPS       16
 
-  #define E0_MAX_CURRENT    1000
-  #define E0_SENSE_RESISTOR   91
+  #define E0_MAX_CURRENT     500
+  #define E0_SENSE_RESISTOR   50
   #define E0_MICROSTEPS       16
 
-  #define E1_MAX_CURRENT    1000
-  #define E1_SENSE_RESISTOR   91
+  #define E1_MAX_CURRENT     500
+  #define E1_SENSE_RESISTOR   50
   #define E1_MICROSTEPS       16
 
-  #define E2_MAX_CURRENT    1000
-  #define E2_SENSE_RESISTOR   91
+  #define E2_MAX_CURRENT     500
+  #define E2_SENSE_RESISTOR   50
   #define E2_MICROSTEPS       16
 
-  #define E3_MAX_CURRENT    1000
-  #define E3_SENSE_RESISTOR   91
+  #define E3_MAX_CURRENT     500
+  #define E3_SENSE_RESISTOR   50
   #define E3_MICROSTEPS       16
 
 #endif

@@ -51,7 +51,7 @@
 #if ENABLED(HAVE_TMCDRIVER)
 
   #include <SPI.h>
-  #include <TMC26XStepper.h>
+  #include "src/HAL/HAL_STM32F446/TMC26XStepper.h"
 
   #if ENABLED(X_IS_TMC)
     TMC26XStepper stepperX(200, X_ENABLE_PIN, X_STEP_PIN, X_DIR_PIN, X_MAX_CURRENT, X_SENSE_RESISTOR);
@@ -85,8 +85,8 @@
   #endif
 
   #define _TMC_INIT(A) do{ \
-    stepper##A.setMicrosteps(A##_MICROSTEPS);
-    stepper##A.start();
+    stepper##A.setMicrosteps(A##_MICROSTEPS);	\
+    stepper##A.start();	\
   } while(0)
 
   void tmc_init() {

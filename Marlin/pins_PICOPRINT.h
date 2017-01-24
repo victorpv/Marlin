@@ -48,7 +48,7 @@
 //
 // Servos
 //
-#define SERVO0_PIN         5
+//#define SERVO0_PIN         5
 
 //
 // Limit Switches
@@ -75,43 +75,42 @@
 
 #define X_STEP_PIN         _STM32_PIN(PORTC, 6)
 #define X_DIR_PIN          _STM32_PIN(PORTC, 7)
-#define X_CS_PIN           _STM32_PIN(PORTC, 8)
-#define X_ENABLE_PIN       _STM32_PIN(PORTE, 0)
+#define X_ENABLE_PIN       _STM32_PIN(PORTC, 8)
+
 
 #define Y_STEP_PIN         _STM32_PIN(PORTD, 9)
 #define Y_DIR_PIN          _STM32_PIN(PORTD, 10)
-#define Y_CS_PIN           _STM32_PIN(PORTD, 11)
-#define Y_ENABLE_PIN       _STM32_PIN(PORTE, 0)
+#define Y_ENABLE_PIN       _STM32_PIN(PORTD, 11)
 
 #define Z_STEP_PIN         _STM32_PIN(PORTE, 15)
 #define Z_DIR_PIN          _STM32_PIN(PORTB, 10)
-#define Z_CS_PIN           _STM32_PIN(PORTD, 8)
-#define Z_ENABLE_PIN       _STM32_PIN(PORTE, 0)
+#define Z_ENABLE_PIN       _STM32_PIN(PORTD, 8)
+
 
 #define E0_STEP_PIN        _STM32_PIN(PORTB, 1)
 #define E0_DIR_PIN         _STM32_PIN(PORTB, 2)
-#define E0_CS_PIN          _STM32_PIN(PORTE, 11)
-#define E0_ENABLE_PIN      _STM32_PIN(PORTE, 0)
+#define E0_ENABLE_PIN      _STM32_PIN(PORTE, 11)
+
 
 #define E1_STEP_PIN        _STM32_PIN(PORTC, 4)
 #define E1_DIR_PIN         _STM32_PIN(PORTC, 5)
-#define E1_CS_PIN          _STM32_PIN(PORTB, 0)
-#define E1_ENABLE_PIN      _STM32_PIN(PORTE, 0)
+#define E1_ENABLE_PIN      _STM32_PIN(PORTB, 0)
+
 
 #define E2_STEP_PIN        _STM32_PIN(PORTC, 13)
 #define E2_DIR_PIN         _STM32_PIN(PORTC, 14)
-#define E2_CS_PIN          _STM32_PIN(PORTC, 15)
-#define E2_ENABLE_PIN      _STM32_PIN(PORTE, 0)
+#define E2_ENABLE_PIN      _STM32_PIN(PORTC, 15)
+
 
 #define E3_STEP_PIN        _STM32_PIN(PORTE, 5)
 #define E3_DIR_PIN         _STM32_PIN(PORTE, 4)
-#define E3_CS_PIN          _STM32_PIN(PORTE, 6)
-#define E3_ENABLE_PIN      _STM32_PIN(PORTE, 0)
+#define E3_ENABLE_PIN      _STM32_PIN(PORTE, 6)
+
 
 #define E4_STEP_PIN        _STM32_PIN(PORTE, 1)
 #define E4_DIR_PIN         _STM32_PIN(PORTE, 2)
-#define E4_CS_PIN          _STM32_PIN(PORTE, 3)
-#define E4_ENABLE_PIN      _STM32_PIN(PORTE, 0)
+#define E4_ENABLE_PIN      _STM32_PIN(PORTE, 3)
+
 
 
 

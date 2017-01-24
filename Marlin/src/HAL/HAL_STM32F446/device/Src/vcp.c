@@ -18,6 +18,8 @@ FIFO RX_FIFO = {.FIFO_POS=0};
 
 uint8_t VCP_write (uint8_t* message,uint16_t length)
 {
+	uint32_t startTime = HAL_GetTick();
+
 	if ((message == NULL) || (length <= 0))
 	{
 		return USBD_FAIL;
@@ -28,7 +30,7 @@ uint8_t VCP_write (uint8_t* message,uint16_t length)
 	{
 	   result = CDC_Transmit_FS(message,length);
 	}
-	while(result != USBD_OK);
+	while(result != USBD_OK && (HAL_GetTick() - startTime < 50));
 
 	return result;
 }

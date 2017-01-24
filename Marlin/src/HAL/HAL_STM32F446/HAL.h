@@ -71,6 +71,7 @@ using std::abs;
 
 #include "Serial.h"
 #include "HAL_timers.h"
+#include "TMC26XStepper.h"
 
 // --------------------------------------------------------------------------
 // Defines

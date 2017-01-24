@@ -5,8 +5,8 @@
  extern "C" {
 #endif
 
-#define APP_RX_DATA_SIZE  64
-#define APP_TX_DATA_SIZE  64
+#define APP_RX_DATA_SIZE  256
+#define APP_TX_DATA_SIZE  256
 
  extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
  extern volatile uint32_t rxReadIndex;

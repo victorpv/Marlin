@@ -116,12 +116,14 @@ int main(void)
   //temporary workaround so there's time to connect via USB before Marlin starts
   //doesn't really matter if not, but it's nice to catch Marlin's startup info
   //could probably check and wait until COM port is opened?
-  for(int i = 0; i < 10; i++) {
+  for(int i = 0; i < 5; i++) {
 	  HAL_Delay(250);
 	  uint8_t HiMsg[] = "why hello there!\r\n";
 	  CDC_Transmit_FS(HiMsg, strlen(HiMsg));
 
   }
+
+  HAL_GPIO_WritePin(STEP_EN_Pin,STEP_EN_GPIO_Port,GPIO_PIN_RESET);
 
   HAL_main();
   /* USER CODE END 2 */
