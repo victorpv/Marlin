@@ -162,7 +162,7 @@ const PinInfo pin_map[] = {
   { GPIOA, GPIO_PIN_13 },
   { GPIOA, GPIO_PIN_14 },
   { GPIOA, GPIO_PIN_15 },
-  { GPIOA, GPIO_PIN_0 },
+  { GPIOB, GPIO_PIN_0 },
   { GPIOB, GPIO_PIN_1 },
   { GPIOB, GPIO_PIN_2 },
   { GPIOB, GPIO_PIN_3 },
