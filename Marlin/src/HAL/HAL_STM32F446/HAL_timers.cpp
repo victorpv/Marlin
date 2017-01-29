@@ -65,7 +65,7 @@ tTimerConfig timerConfig[NUM_HARDWARE_TIMERS];
 // --------------------------------------------------------------------------
 // Private functions
 // --------------------------------------------------------------------------
-uint32_t hal_timer_rate = 108000000;
+uint32_t hal_timer_rate = 90000000;
 void timers_init() {
   //STEPPER TIMER TIM2 //use a 32bit timer 
   hal_timer_rate = HAL_RCC_GetPCLK1Freq()*2; //Timer is on APB1 with 2x multiplier
@@ -77,7 +77,7 @@ void timers_init() {
   timerConfig[0].timerdef.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
   timerConfig[0].IRQ_Id = TIM2_IRQn;
   timerConfig[0].callback = (uint32_t)TC3_Handler;
-  NVIC_SetPriority(timerConfig[0].IRQ_Id, 1);
+  NVIC_SetPriority(timerConfig[0].IRQ_Id, 0);
 
   //TEMP TIMER TIM7 // any available 16bit Timer (1 already used for PWM)
   __HAL_RCC_TIM7_CLK_ENABLE();

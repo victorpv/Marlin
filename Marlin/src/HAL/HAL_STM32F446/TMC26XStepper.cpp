@@ -745,6 +745,7 @@ unsigned char TMC26XStepper::getCoolStepLowerCurrentLimit() {
 }
 
 void TMC26XStepper::setEnabled(bool enabled) {
+	unsigned long old_chopper_config_register = chopper_config_register;
     //delete the t_off in the chopper config to get sure
     chopper_config_register &= ~(T_OFF_PATTERN);
     if (enabled) {
@@ -752,7 +753,7 @@ void TMC26XStepper::setEnabled(bool enabled) {
         chopper_config_register |= this->constant_off_time;
     }
     //if not enabled we don't have to do anything since we already delete t_off from the register
-	if (started) {
+	if (started && (chopper_config_register != old_chopper_config_register)) {
 		send262(chopper_config_register);
 	}
 }

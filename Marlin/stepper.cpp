@@ -563,11 +563,11 @@ void Stepper::isr() {
   // Calculate new timer value
   if (step_events_completed <= (uint32_t)current_block->accelerate_until) {
 
-    //#ifdef CPU_32_BIT
-      MultiU32X32toH32(acc_step_rate, acceleration_time, current_block->acceleration_rate);  //todo: figure out why I had to compensate by a multiplying by 256 (1<<8) the macro wrong? or just a symptom
-    //#else
-    //  MultiU24X32toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
-    //#endif
+    #ifdef CPU_32_BIT
+      MultiU32X32toH32(acc_step_rate, acceleration_time, current_block->acceleration_rate);
+    #else
+      MultiU24X32toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
+    #endif
     acc_step_rate += current_block->initial_rate;
 
     // upper limit
@@ -617,13 +617,13 @@ void Stepper::isr() {
     #endif
   }
   else if (step_events_completed > (uint32_t)current_block->decelerate_after) {
-    //#ifdef CPU_32_BIT
+    #ifdef CPU_32_BIT
       HAL_TIMER_TYPE step_rate;
-      MultiU32X32toH32(step_rate, deceleration_time, current_block->acceleration_rate); //todo: figure out why I had to compensate by a multiplying by 256 (1<<8) the macro wrong? or just a symptom
-    //#else
-    //  uint16_t step_rate;
-    //  MultiU24X32toH16(step_rate, deceleration_time, current_block->acceleration_rate);
-   // #endif
+      MultiU32X32toH32(step_rate, deceleration_time, current_block->acceleration_rate);
+    #else
+      uint16_t step_rate;
+      MultiU24X32toH16(step_rate, deceleration_time, current_block->acceleration_rate);
+    #endif
 
     if (step_rate <= acc_step_rate) { // Still decelerating? //todo: HAL changed to <=
       step_rate = acc_step_rate - step_rate;
@@ -691,9 +691,9 @@ void Stepper::isr() {
   #ifdef CPU_32_BIT
   //todo: undo comment out
     // Make sure stepper interrupt does not monopolise CPU by adjusting count to give about 8 us room
- //   uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM);
- //   uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
- //   HAL_timer_set_count(STEP_TIMER_NUM, stepper_timer_count < stepper_timer_current_count ? stepper_timer_current_count : stepper_timer_count);
+    uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM);
+    uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
+    HAL_timer_set_count(STEP_TIMER_NUM, stepper_timer_count < stepper_timer_current_count ? stepper_timer_current_count : stepper_timer_count);
   #else
     NOLESS(OCR1A, TCNT1 + 16);
   #endif

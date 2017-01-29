@@ -615,9 +615,9 @@
 // The number of linear motions that can be in the plan at any give time.
 // THE BLOCK_BUFFER_SIZE NEEDS TO BE A POWER OF 2, i.g. 8,16,32 because shifts and ors are used to do the ring-buffering.
 #if ENABLED(SDSUPPORT)
-  #define BLOCK_BUFFER_SIZE 32 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
+  #define BLOCK_BUFFER_SIZE 64 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
 #else
-  #define BLOCK_BUFFER_SIZE 32 // maximize block buffer
+  #define BLOCK_BUFFER_SIZE 64 // maximize block buffer
 #endif
 
 // @section serial
@@ -633,7 +633,7 @@
 // For debug-echo: 128 bytes for the optimal speed.
 // Other output doesn't need to be that speedy.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256]
-#define TX_BUFFER_SIZE 64
+#define TX_BUFFER_SIZE 128
 
 // Enable an emergency-command parser to intercept certain commands as they
 // enter the serial receive buffer, so they cannot be blocked.
@@ -720,45 +720,45 @@
   //#define E2_IS_TMC
   //#define E3_IS_TMC
 
-  #define X_MAX_CURRENT      500 // in mA
+  #define X_MAX_CURRENT      300 // in mA
   #define X_SENSE_RESISTOR    50 // in mOhms
-  #define X_MICROSTEPS        16 // number of microsteps
+  #define X_MICROSTEPS        256 // number of microsteps
 
-  #define X2_MAX_CURRENT     500
+  #define X2_MAX_CURRENT     300
   #define X2_SENSE_RESISTOR   50
-  #define X2_MICROSTEPS       16
+  #define X2_MICROSTEPS       256
 
-  #define Y_MAX_CURRENT      500
+  #define Y_MAX_CURRENT      300
   #define Y_SENSE_RESISTOR    50
-  #define Y_MICROSTEPS        16
+  #define Y_MICROSTEPS        256
 
-  #define Y2_MAX_CURRENT     500
+  #define Y2_MAX_CURRENT     300
   #define Y2_SENSE_RESISTOR   50
-  #define Y2_MICROSTEPS       16
+  #define Y2_MICROSTEPS       256
 
-  #define Z_MAX_CURRENT      500
+  #define Z_MAX_CURRENT      300
   #define Z_SENSE_RESISTOR    50
-  #define Z_MICROSTEPS        16
+  #define Z_MICROSTEPS        256
 
-  #define Z2_MAX_CURRENT     500
+  #define Z2_MAX_CURRENT     300
   #define Z2_SENSE_RESISTOR   50
-  #define Z2_MICROSTEPS       16
+  #define Z2_MICROSTEPS       256
 
-  #define E0_MAX_CURRENT     500
+  #define E0_MAX_CURRENT     300
   #define E0_SENSE_RESISTOR   50
-  #define E0_MICROSTEPS       16
+  #define E0_MICROSTEPS       256
 
-  #define E1_MAX_CURRENT     500
+  #define E1_MAX_CURRENT     300
   #define E1_SENSE_RESISTOR   50
-  #define E1_MICROSTEPS       16
+  #define E1_MICROSTEPS       256
 
-  #define E2_MAX_CURRENT     500
+  #define E2_MAX_CURRENT     300
   #define E2_SENSE_RESISTOR   50
-  #define E2_MICROSTEPS       16
+  #define E2_MICROSTEPS       256
 
-  #define E3_MAX_CURRENT     500
+  #define E3_MAX_CURRENT     300
   #define E3_SENSE_RESISTOR   50
-  #define E3_MICROSTEPS       16
+  #define E3_MICROSTEPS       256
 
 #endif
 
