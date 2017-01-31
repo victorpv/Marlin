@@ -193,7 +193,7 @@ void pinMode(int pin_number, int mode) {
 
 			//set pin push-pull/open-drain
 			if(setType) {
-				pin_map[pin_number].port->OTYPER = (pin_map[pin_number].port->PUPDR & ~(0x01 << (i))) | ((uint32_t)(_type << (i)));
+				pin_map[pin_number].port->OTYPER = (pin_map[pin_number].port->OTYPER & ~(0x01 << (i))) | ((uint32_t)(_type << (i)));
 			}
 		}
 	}
