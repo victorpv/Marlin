@@ -7207,6 +7207,69 @@ inline void gcode_M503() {
 #endif
 
 /**
+ * M906: Set TMC stepper motor current using axis codes X, Y, Z, E
+ */
+inline void gcode_M906() {
+  int current = 0;
+  int maxCurrent = 2000;
+  int minCurrent = 100;
+
+  #if ENABLED(HAVE_TMCDRIVER)
+
+	#if ENABLED(X_IS_TMC)
+	  if (code_seen('X')) {
+		current = constrain(code_value_int(),minCurrent,maxCurrent);
+		X_CURRENT_SET(current);
+		SERIAL_ECHO_START;
+		SERIAL_ECHOPGM("X current set to ");
+		SERIAL_ECHOLN(current);
+	  }
+	#endif
+
+	#if ENABLED(Y_IS_TMC)
+	  if (code_seen('Y')) {
+		current = constrain(code_value_int(),minCurrent,maxCurrent);
+		Y_CURRENT_SET(current);
+		SERIAL_ECHO_START;
+		SERIAL_ECHOPGM("Y current set to ");
+		SERIAL_ECHOLN(current);
+	  }
+	#endif
+
+	#if ENABLED(Z_IS_TMC)
+	  if (code_seen('Z')) {
+		current = constrain(code_value_int(),minCurrent,maxCurrent);
+		Z_CURRENT_SET(current);
+		SERIAL_ECHO_START;
+		SERIAL_ECHOPGM("Z current set to ");
+		SERIAL_ECHOLN(current);
+	  }
+	#endif
+
+    if (code_seen('E')) {
+        current = constrain(code_value_int(),minCurrent,maxCurrent);
+        #if ENABLED(E0_IS_TMC)
+          E0_CURRENT_SET(current);
+        #endif
+        #if ENABLED(E1_IS_TMC)
+          E1_CURRENT_SET(current);
+        #endif
+        #if ENABLED(E2_IS_TMC)
+          E2_CURRENT_SET(current);
+        #endif
+        #if ENABLED(E3_IS_TMC)
+          E3_CURRENT_SET(current);
+        #endif
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM("E current set to ");
+        SERIAL_ECHOLN(current);
+    }
+
+  #endif
+
+}
+
+/**
  * M907: Set digital trimpot motor current using axis codes X, Y, Z, E, B, S
  */
 inline void gcode_M907() {
@@ -8416,6 +8479,10 @@ void process_next_command() {
           gcode_M905();
           break;
       #endif
+
+      case 906: // M906: Set motor driver current.
+        gcode_M906();
+        break;
 
       case 907: // M907: Set digital trimpot motor current using axis codes.
         gcode_M907();
