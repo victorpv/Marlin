@@ -334,7 +334,7 @@ void TMC26XStepper::setCurrent(unsigned int current) {
 	//or vsense = 0,165V (VSENSE set)
 	current_scaling = (byte)((resistor_value*mASetting*32.0/(0.31*1000.0*1000.0))-0.5); //theoretically - 1.0 for better rounding it is 0.5
 
-	//check if the current scalingis too low
+	//check if the current scaling is too low
 	if (current_scaling<16) {
         //set the csense bit to get a use half the sense voltage (to support lower motor currents)
 		this->driver_configuration_register_value |= VSENSE;
@@ -556,7 +556,7 @@ void TMC26XStepper::setConstantOffTimeChopper(char constant_off_time, char blank
 	}
 	//if started we directly send it to the motor
 	if (started) {
-		send262(driver_control_register_value);
+		send262(chopper_config_register);
 	}
 }
 
@@ -636,7 +636,7 @@ void TMC26XStepper::setSpreadCycleChopper(char constant_off_time, char blank_tim
 	chopper_config_register |= ((unsigned long)blank_value) << BLANK_TIMING_SHIFT;
 	//if started we directly send it to the motor
 	if (started) {
-		send262(driver_control_register_value);
+		send262(chopper_config_register);
 	}
 }
 
@@ -660,7 +660,7 @@ void TMC26XStepper::setRandomOffTime(char value) {
 	}
 	//if started we directly send it to the motor
 	if (started) {
-		send262(driver_control_register_value);
+		send262(chopper_config_register);
 	}
 }
 
