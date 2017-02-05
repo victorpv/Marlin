@@ -110,7 +110,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_3);
+
   pulse_status_led(2);
 
   //temporary workaround so there's time to connect via USB before Marlin starts
