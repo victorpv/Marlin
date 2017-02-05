@@ -212,6 +212,7 @@ uint8_t spiRec(uint32_t chan);
 
 
 // EEPROM
+void eeprom_setup();
 void eeprom_write_byte(unsigned char *pos, char value);
 char eeprom_read_byte(uint8_t * pos);
 void eeprom_read_block (void *__dst, const void *__src, size_t __n);

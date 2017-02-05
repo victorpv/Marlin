@@ -33,6 +33,7 @@
 
 #include "../HAL.h"
 #include "vcp.h"
+#include "eeprom.h"
 
 // --------------------------------------------------------------------------
 // Externals
@@ -92,6 +93,9 @@ void HAL_init() {
 
   HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_2);
+
+
+  eeprom_setup();
 
 }
 
@@ -368,13 +372,42 @@ uint32_t flash_size = 0x100000;//1MB
 uint32_t write_block_size = 0x8000;
 uint32_t write_block_addr = (flash_start_addr + flash_size) - write_block_size;
 
-void eeprom_write_byte(unsigned char *pos, char value) {
-    HAL_FLASH_Unlock();
+void eeprom_setup() {
+	HAL_FLASH_Unlock();
 
-    HAL_FLASH_Lock();
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
+
+	/* EEPROM Init */
+	if(EE_Initialise() != EE_OK)
+	{
+		while(1) {
+			HAL_Delay(1);
+		}
+	}
+
+	HAL_FLASH_Lock();
+
 }
-char eeprom_read_byte(uint8_t * pos) {
-    return '\0';
+
+void eeprom_write_byte(unsigned char *pos, char value) {
+	uint16_t eeprom_address = (unsigned) pos;
+	HAL_FLASH_Unlock();
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
+	if(EE_WriteVariable(eeprom_address, (uint16_t) value) != EE_OK) {
+		while(1) {
+			HAL_Delay(1);
+		}
+	}
+	HAL_FLASH_Lock();
+}
+char eeprom_read_byte(unsigned char *pos) {
+	uint16_t data = 0xFF;
+	uint16_t eeprom_address = (unsigned) pos;
+
+	if(EE_ReadVariable(eeprom_address, &data) != EE_OK) {
+		return (char) data;
+	}
+	return (char)data;
 }
 void eeprom_read_block (void *__dst, const void *__src, size_t __n) {
 
