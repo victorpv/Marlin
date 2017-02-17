@@ -83,7 +83,9 @@
     #define X_ENABLE_INIT NOOP
     #define X_ENABLE_WRITE(STATE) stepperX.setEnabled(STATE)
     #define X_ENABLE_READ stepperX.isEnabled()
-	#define X_CURRENT_SET(c) stepperX.setCurrent(c)
+	  #define X_CURRENT_SET(c) stepperX.setCurrent(c)
+    #define X_MICROSTEPS_SET(m) stepperX.setMicrosteps(m)
+    #define X_MICROSTEPS_GET stepperX.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(X_IS_TMC2130)
       extern Trinamic_TMC2130 stepperX;
@@ -115,7 +117,9 @@
     #define Y_ENABLE_INIT NOOP
     #define Y_ENABLE_WRITE(STATE) stepperY.setEnabled(STATE)
     #define Y_ENABLE_READ stepperY.isEnabled()
-	#define Y_CURRENT_SET(c) stepperY.setCurrent(c)
+	  #define Y_CURRENT_SET(c) stepperY.setCurrent(c)
+    #define Y_MICROSTEPS_SET(m) stepperY.setMicrosteps(m)
+    #define Y_MICROSTEPS_GET stepperY.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(Y_IS_TMC2130)
       extern Trinamic_TMC2130 stepperY;
@@ -147,7 +151,9 @@
     #define Z_ENABLE_INIT NOOP
     #define Z_ENABLE_WRITE(STATE) stepperZ.setEnabled(STATE)
     #define Z_ENABLE_READ stepperZ.isEnabled()
-	#define Z_CURRENT_SET(c) stepperZ.setCurrent(c)
+	  #define Z_CURRENT_SET(c) stepperZ.setCurrent(c)
+    #define Z_MICROSTEPS_SET(m) stepperZ.setMicrosteps(m)
+    #define Z_MICROSTEPS_GET stepperZ.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(Z_IS_TMC2130)
       extern Trinamic_TMC2130 stepperZ;
@@ -181,6 +187,8 @@
       #define X2_ENABLE_WRITE(STATE) stepperX2.setEnabled(STATE)
       #define X2_ENABLE_READ stepperX2.isEnabled()
       #define X2_CURRENT_SET(c) stepperX2.setCurrent(c)
+      #define X2_MICROSTEPS_SET(m) stepperX2.setMicrosteps(m)
+      #define X2_MICROSTEPS_GET stepperX2.getMicrosteps()
     #else
       #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(X2_IS_TMC2130)
         extern Trinamic_TMC2130 stepperX2;
@@ -215,6 +223,8 @@
       #define Y2_ENABLE_WRITE(STATE) stepperY2.setEnabled(STATE)
       #define Y2_ENABLE_READ stepperY2.isEnabled()
       #define Y2_CURRENT_SET(c) stepperY2.setCurrent(c)
+      #define Y2_MICROSTEPS_SET(m) stepperY2.setMicrosteps(m)
+      #define Y2_MICROSTEPS_GET stepperY2.getMicrosteps()
     #else
       #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(Y2_IS_TMC2130)
         extern Trinamic_TMC2130 stepperY2;
@@ -249,6 +259,8 @@
       #define Z2_ENABLE_WRITE(STATE) stepperZ2.setEnabled(STATE)
       #define Z2_ENABLE_READ stepperZ2.isEnabled()
       #define Z2_CURRENT_SET(c) stepperZ2.setCurrent(c)
+      #define Z2_MICROSTEPS_SET(m) stepperZ2.setMicrosteps(m)
+      #define Z2_MICROSTEPS_GET stepperZ2.getMicrosteps()
     #else
       #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(Z2_IS_TMC2130)
         extern Trinamic_TMC2130 stepperZ2;
@@ -282,6 +294,8 @@
     #define E0_ENABLE_WRITE(STATE) stepperE0.setEnabled(STATE)
     #define E0_ENABLE_READ stepperE0.isEnabled()
     #define E0_CURRENT_SET(c) stepperE0.setCurrent(c)
+    #define E0_MICROSTEPS_SET(m) stepperE0.setMicrosteps(m)
+    #define E0_MICROSTEPS_GET stepperE0.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(E0_IS_TMC2130)
       extern Trinamic_TMC2130 stepperE0;
@@ -314,6 +328,8 @@
     #define E1_ENABLE_WRITE(STATE) stepperE1.setEnabled(STATE)
     #define E1_ENABLE_READ stepperE1.isEnabled()
     #define E1_CURRENT_SET(c) stepperE1.setCurrent(c)
+    #define E1_MICROSTEPS_SET(m) stepperE1.setMicrosteps(m)
+    #define E1_MICROSTEPS_GET stepperE1.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(E1_IS_TMC2130)
       extern Trinamic_TMC2130 stepperE1;
@@ -346,6 +362,8 @@
     #define E2_ENABLE_WRITE(STATE) stepperE2.setEnabled(STATE)
     #define E2_ENABLE_READ stepperE2.isEnabled()
     #define E2_CURRENT_SET(c) stepperE2.setCurrent(c)
+    #define E2_MICROSTEPS_SET(m) stepperE2.setMicrosteps(m)
+    #define E2_MICROSTEPS_GET stepperE2.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(E2_IS_TMC2130)
       extern Trinamic_TMC2130 stepperE2;
@@ -378,6 +396,8 @@
     #define E3_ENABLE_WRITE(STATE) stepperE3.setEnabled(STATE)
     #define E3_ENABLE_READ stepperE3.isEnabled()
     #define E3_CURRENT_SET(c) stepperE3.setCurrent(c)
+    #define E3_MICROSTEPS_SET(m) stepperE3.setMicrosteps(m)
+    #define E3_MICROSTEPS_GET stepperE3.getMicrosteps()
   #else
     #if ENABLED(HAVE_TMC2130DRIVER) && ENABLED(E3_IS_TMC2130)
       extern Trinamic_TMC2130 stepperE3;

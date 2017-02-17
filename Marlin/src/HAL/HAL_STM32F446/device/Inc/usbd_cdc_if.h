@@ -45,6 +45,8 @@
 #ifndef __USBD_CDC_IF_H
 #define __USBD_CDC_IF_H
 
+#define CDC_SERIAL_BUFFER_SIZE  128 //USBSerial buffer data length
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -67,6 +69,7 @@
   */ 
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
+ uint8_t CDC_getTransmitterStatus(void);
  extern USBD_CDC_ItfTypeDef  USBD_CDC_fops;
 
 /* USER CODE END EXPORTED_DEFINES */
@@ -113,6 +116,7 @@ extern USBD_CDC_ItfTypeDef  USBD_Interface_fops_FS;
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
+extern void USBSerial_Rx_Handler(uint8_t *data, uint16_t len);
 /* USER CODE END EXPORTED_FUNCTIONS */
 /**
   * @}

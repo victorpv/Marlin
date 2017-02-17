@@ -32,8 +32,8 @@
 // --------------------------------------------------------------------------
 
 #include "../HAL.h"
-#include "vcp.h"
 #include "eeprom.h"
+#include "USBSerial.h"
 
 // --------------------------------------------------------------------------
 // Externals
@@ -58,13 +58,24 @@
 uint32_t HAL_adc_result;
 
 /* DMA serial wrapper variables */
-const uint16_t rxbuffer_size = 256; //256 byte dma receive buffer
-uint8_t rxbuffer[rxbuffer_size];
-HalSerial usb_Serial_connection(rxbuffer_size);
+USBSerial USerial;
 
 /* DMA ADC buffer for all pins */
 const uint8_t adc_pins = 6;
 uint16_t adc_readings[adc_pins] = {0};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void USBSerial_Rx_Handler(uint8_t *data, uint16_t len){
+	USerial.CDC_RxHandler(data, len);
+}
+
+#ifdef __cplusplus
+}
+#endif
+
 
 // --------------------------------------------------------------------------
 // Private Variables
@@ -254,14 +265,15 @@ long constrain(long val, long min, long max) {
 }
 
 void serialprintPGM(const char * str){
-	usb_Serial_connection.print(str);
+	USerial.write(str);
+	//delay(10);
 }
 
 void sprintf_P(char * target, const char * format, ...){
-	va_list va;
-	va_start(va,format);
-	vsprintf(target,format,va);
-	va_end(va);
+	//va_list va;
+	//va_start(va,format);
+	//vsprintf(target,format,va);
+	//va_end(va);
 }
 
 bool strstr_P(const char * str1, const char * str2) {
@@ -341,7 +353,8 @@ void HAL_adc_init(void) {
 
 }
 
-static int active_adc_pin = 0;
+uint8_t active_adc_pin = 0;
+
 void HAL_adc_start_conversion (uint8_t adc_pin)
 {
 	switch (adc_pin) {
@@ -411,7 +424,13 @@ char eeprom_read_byte(unsigned char *pos) {
 	return (char)data;
 }
 void eeprom_read_block (void *__dst, const void *__src, size_t __n) {
+	uint16_t data = 0xFF;
+	uint16_t eeprom_address = (unsigned) __src;
 
+	for(uint8_t c = 0; c < __n; c++) {
+		EE_ReadVariable(eeprom_address+c, &data);
+		*((uint8_t*)__dst + c) = data;
+	}
 }
 void eeprom_update_block (const void *__src, void *__dst, size_t __n) {
 

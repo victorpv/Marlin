@@ -35,7 +35,6 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include "usb_device.h"
-#include "vcp.h"
 #include "usb_ringbuffer.h"
 
 /* Variables */
@@ -49,7 +48,7 @@ extern int errno;
 
 
 int __io_putchar(int ch) {
-	VCP_write((uint8_t *)&ch, 1);
+	//VCP_write((uint8_t *)&ch, 1);
 	return ch;
 }
 
@@ -96,21 +95,7 @@ void _exit (int status)
 int _read (int file, char *ptr, int len)
 {
 	uint32_t bytesRead = 0;
-	int DataIdx;
-
-	if(len > bytesRead){
-	          while(rxReadIndex == (rxBuffLength - rxWriteIndex)){}
-	          {
-	               while((len > bytesRead) & (rxReadIndex !=(rxBuffLength - rxWriteIndex ))){
-	                    ptr[bytesRead] = UserRxBufferFS[rxBuffLength - rxReadIndex];
-	                    if(rxReadIndex == (0))
-	                    	rxReadIndex = rxBuffLength;
-	                    else rxReadIndex--;
-	                    bytesRead++;
-	               }
-	          }
-	     }
-	     return (int)bytesRead;
+    return (int)bytesRead;
 }
 
 int _write(int file, char *ptr, int len)

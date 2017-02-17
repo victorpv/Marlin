@@ -150,7 +150,12 @@ TMC26XStepper::TMC26XStepper(int number_of_steps,
 	//set the current
 	setCurrent(current);
 	//set to a conservative start value
-	setConstantOffTimeChopper(7, 54, 13,12,1);
+	setConstantOffTimeChopper(7, 54, 13,0,1);
+	//setSpreadCycleChopper(8, 1, 4, -2, 1);
+
+
+	setRandomOffTime(1);
+
     //set a nice microstepping value
     setMicrosteps(DEFAULT_MICROSTEPPING_VALUE);
     //save the number of steps
@@ -176,7 +181,7 @@ void TMC26XStepper::start() {
 	Serial.print("STEP pin: ");
 	Serial.println(step_pin);
 	Serial.print("current scaling: ");
-	Serial.println(current_scaling,DEC);
+	//Serial.println(current_scaling,DEC);
 #endif
 	//set the pins as output & its initial value
 	pinMode(step_pin, OUTPUT);

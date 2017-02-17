@@ -44,8 +44,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 /* USER CODE BEGIN INCLUDE */
-#include "vcp.h"
-#include "usb_ringbuffer.h"
 
 /* USER CODE END INCLUDE */
 
@@ -97,24 +95,24 @@ TIM_HandleTypeDef  TimHandle;
 /* Create buffer for reception and transmission           */
 /* It's up to user to redefine and/or remove those define */
 /* Received Data over USB are stored in this buffer       */
+#define APP_RX_DATA_SIZE  CDC_SERIAL_BUFFER_SIZE
+#define APP_TX_DATA_SIZE  CDC_SERIAL_BUFFER_SIZE
+
 uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 
 /* Send Data over USB CDC are stored in this buffer       */
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-uint32_t BuffLength;
-
-volatile uint32_t rxReadIndex = 0;
-volatile uint32_t rxWriteIndex = 0;
-volatile uint32_t rxBuffLength = APP_RX_DATA_SIZE;
-uint32_t UserTxBufPtrIn = 0;/* Increment this pointer or roll it back to
-                               start address when data are received over USART */
-uint32_t UserTxBufPtrOut = 0; /* Increment this pointer or roll it back to
-                                 start address when data are sent over USB */
-
-uint8_t DummyRxBufferFS[APP_RX_DATA_SIZE];
+uint8_t dtr_pin = 0; //DTR pin is disabled
 uint8_t lineCodingBuff[7];
+USBD_CDC_LineCodingTypeDef LineCoding =
+{
+	115200, /* baud rate*/
+	0x00,   /* stop bits-1*/
+	0x00,   /* parity - none*/
+	0x08    /* nb. of bits 8*/
+};
 
 /* USER CODE END PRIVATE_VARIABLES */
 
@@ -166,21 +164,9 @@ USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
 static int8_t CDC_Init_FS(void)
 { 
   /* USER CODE BEGIN 3 */ 
-
-  /*##-3- Configure the TIM Base generation  #################################*/
-  //TIM_Config();
-
-  /*##-4- Start the TIM Base generation in interrupt mode ####################*/
-  /* Start Channel1 */
-  //if(HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK)
-  //{
-	/* Starting Error */
-	//Error_Handler();
-  //}
-
   /* Set Application Buffers */
-  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, DummyRxBufferFS);
+  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, CDC_SERIAL_BUFFER_SIZE);
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
   return (USBD_OK);
   /* USER CODE END 3 */ 
 }
@@ -248,28 +234,25 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*                                        4 - Space                            */
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
-  case CDC_SET_LINE_CODING:   
-    lineCodingBuff[0] = pbuf[0];
-    lineCodingBuff[1] = pbuf[1];
-    lineCodingBuff[2] = pbuf[2];
-    lineCodingBuff[3] = pbuf[3];
-    lineCodingBuff[4] = pbuf[4];
-    lineCodingBuff[5] = pbuf[5];
-    lineCodingBuff[6] = pbuf[6];
+  case CDC_SET_LINE_CODING:
+	LineCoding.bitrate		= (uint32_t) (pbuf[0] | (pbuf[1] << 8) | (pbuf[2] << 16) | (pbuf[3] << 24));
+	LineCoding.format 		= pbuf[4];
+	LineCoding.paritytype	= pbuf[5];
+	LineCoding.datatype		= pbuf[6];
     break;
 
   case CDC_GET_LINE_CODING:     
-	pbuf[0] = lineCodingBuff[0];
-	pbuf[1] = lineCodingBuff[1];
-	pbuf[2] = lineCodingBuff[2];
-	pbuf[3] = lineCodingBuff[3];
-	pbuf[4] = lineCodingBuff[4];
-	pbuf[5] = lineCodingBuff[5];
-	pbuf[6] = lineCodingBuff[6];
+	pbuf[0] = (uint8_t) (LineCoding.bitrate);
+	pbuf[1] = (uint8_t) (LineCoding.bitrate >> 8);
+	pbuf[2] = (uint8_t) (LineCoding.bitrate >> 16);
+	pbuf[3] = (uint8_t) (LineCoding.bitrate >> 24);
+	pbuf[4] = LineCoding.format;
+	pbuf[5] = LineCoding.paritytype;
+	pbuf[6] = LineCoding.datatype;
     break;
 
   case CDC_SET_CONTROL_LINE_STATE:
-
+	  dtr_pin++; //DTR pin is enabled
     break;
 
   case CDC_SEND_BREAK:
@@ -301,20 +284,31 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
   */
 static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
-  /* USER CODE BEGIN 6 */
-	volatile uint32_t counter = 0;
-
-	while(counter < *Len){
-		UserRxBufferFS[rxWriteIndex] = Buf[counter];
-		counter++, rxWriteIndex++;
-		if(rxWriteIndex  == rxBuffLength)
-			rxWriteIndex  = 0;
-	}
-
+	/* USER CODE BEGIN 6 */
+	/* Four byte is the magic pack "1EAF" that puts the MCU into bootloader. */
+	//if(*Len >= 4){
+		/**
+		* Check if the incoming contains the string "1EAF".
+		* If yes, check if the DTR has been set, to put the MCU into the bootloader mode.
+		*/
+		//if(dtr_pin > 3){
+			//if((Buf[0] == '1')&&(Buf[1] == 'E')&&(Buf[2] == 'A')&&(Buf[3] == 'F')){
+				//HAL_NVIC_SystemReset();
+			//}
+			//dtr_pin = 0;
+		//}
+	//}
+	//__disable_irq();
+	uint16_t len = *Len;
+	USBSerial_Rx_Handler((uint8_t *)&Buf[0], len);
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+	//__enable_irq();
 
+	//USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+	//USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+	//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	return (USBD_OK);
-  /* USER CODE END 6 */ 
+	/* USER CODE END 6 */
 }
 
 /**
@@ -330,23 +324,16 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
   */
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 {
-  uint8_t result = USBD_OK;
-  /* USER CODE BEGIN 7 */ 
-
-	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
-	{
-		return USBD_FAIL;
-	}
-
+	uint8_t result = USBD_OK;
+	/* USER CODE BEGIN 7 */
 	USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
 	if (hcdc->TxState != 0){
-	return USBD_BUSY;
+		return USBD_BUSY;
 	}
 	USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
 	result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
-
-  /* USER CODE END 7 */ 
-  return result;
+	/* USER CODE END 7 */
+	return result;
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */

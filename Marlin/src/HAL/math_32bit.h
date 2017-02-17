@@ -27,6 +27,7 @@
  * Math helper functions for 32 bit CPUs
  */
 
-#define MultiU32X32toH32(intRes, longIn1, longIn2) intRes = ((uint64_t)longIn1 * longIn2 + 0x80000000) >> 32
+#define MultiU32X32toH32(intRes, longIn1, longIn2) intRes = (uint64_t)((((uint64_t)longIn1 * (uint64_t)longIn2) >> 24)  & 0XFFFFFFFF)
+#define MultiU24X32toH16(intRes, longIn1, longIn2) intRes = (uint16_t)((((uint64_t)longIn1 * (uint64_t)longIn2) >> 24)  & 0XFFFF);
 
 #endif

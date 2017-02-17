@@ -82,15 +82,17 @@ using std::abs;
 #include "fastio.h"
 #include "watchdog.h"
 
-#include "Serial.h"
+//#include "Serial.h"
+#include "USBSerial.h"
+#define USBDP_PIN PA12 //USB Plus (+) pin number. That pin is normally pulled up to 3.3v by a 1.5k resistor
 #include "HAL_timers.h"
 #include "TMC26XStepper.h"
 
 // --------------------------------------------------------------------------
 // Defines
 // --------------------------------------------------------------------------
-extern HalSerial usb_Serial_connection;
-#define MYSERIAL usb_Serial_connection
+extern USBSerial USerial;
+#define MYSERIAL USerial
 typedef bool boolean; //todo: fix HAL hack
 #define PSTR(val) (val) //todo fix HAL hack
 #define PROGMEM //todo :fix HAL hack

@@ -85,7 +85,6 @@ typedef struct {
 
 void timers_init();
 void HAL_timer_start (uint8_t timer_num, uint32_t frequency);
-extern HalSerial usb_Serial_connection;
 void HAL_timer_set_count (uint8_t timer_num, uint32_t count);
 
 HAL_TIMER_TYPE HAL_timer_get_count (uint8_t timer_num);

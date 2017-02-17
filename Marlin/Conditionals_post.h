@@ -171,9 +171,9 @@
     // Double stepping start from STEP_DOUBLER_FREQUENCY + 1, quad stepping start from STEP_DOUBLER_FREQUENCY * 2 + 1
     #ifndef STEP_DOUBLER_FREQUENCY
       #if ENABLED(ADVANCE) || ENABLED(LIN_ADVANCE)
-        #define STEP_DOUBLER_FREQUENCY 60000 // Hz
+        #define STEP_DOUBLER_FREQUENCY 100000 // Hz
       #else
-        #define STEP_DOUBLER_FREQUENCY 80000 // Hz
+        #define STEP_DOUBLER_FREQUENCY 100000 // Hz
       #endif
     #endif
     // Disable double / quad stepping

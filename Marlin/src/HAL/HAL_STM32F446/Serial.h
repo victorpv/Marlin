@@ -24,10 +24,7 @@ public:
 	}
 
 	char read() {
-		uint8_t c = UserRxBufferFS[rxReadIndex++];
-		if(rxReadIndex == rxBuffLength) {
-			rxReadIndex = 0;
-		}
+		uint8_t c = 0;
 		return c;
 	}
 
@@ -39,10 +36,7 @@ public:
 	//NDTR amount of dma block transfer remaining, will restart at 0
 	//perhaps there is a HAL function to retrieve this
 	uint16_t available() {
-		if(rxWriteIndex < rxReadIndex) {
-			return (rxBuffLength + rxWriteIndex) - rxReadIndex;
-		}
-		return rxWriteIndex - rxReadIndex;
+		return 0;
 	}
 
 	void flush() {
