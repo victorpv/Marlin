@@ -7334,15 +7334,95 @@ inline void gcode_M907() {
 
 #endif // HAS_DIGIPOTSS || DAC_STEPPER_CURRENT
 
-#if HAS_MICROSTEPS
+
 
   // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
   inline void gcode_M350() {
-    if (code_seen('S')) for (int i = 0; i <= 4; i++) stepper.microstep_mode(i, code_value_byte());
-    LOOP_XYZE(i) if (code_seen(axis_codes[i])) stepper.microstep_mode(i, code_value_byte());
-    if (code_seen('B')) stepper.microstep_mode(4, code_value_byte());
-    stepper.microstep_readings();
+    //if (code_seen('S')) for (int i = 0; i <= 4; i++) stepper.microstep_mode(i, code_value_byte());
+    //LOOP_XYZE(i) if (code_seen(axis_codes[i])) stepper.microstep_mode(i, code_value_byte());
+    //if (code_seen('B')) stepper.microstep_mode(4, code_value_byte());
+    //stepper.microstep_readings();
+  float oldSteps, newSteps, ratio;  
+
+  #if ENABLED(HAVE_TMCDRIVER)
+    #if ENABLED(X_IS_TMC)
+      if (code_seen('X')) {
+        SERIAL_ECHOPGM("X "); 
+        oldSteps = X_MICROSTEPS_GET;
+        X_MICROSTEPS_SET(code_value_byte());
+        newSteps = X_MICROSTEPS_GET;
+        ratio = newSteps/oldSteps;
+        planner.axis_steps_per_mm[X_AXIS] = planner.axis_steps_per_mm[X_AXIS] * ratio;
+
+
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM(" old microsteps: ");        
+        SERIAL_ECHOLN(oldSteps);        
+        SERIAL_ECHOPGM("new microsteps: ");
+        SERIAL_ECHOLN(newSteps);
+        SERIAL_ECHO("ratio: ");
+        SERIAL_ECHOLN(ratio);
+
+      }
+    #endif
+
+    #if ENABLED(Y_IS_TMC)
+      if (code_seen('Y')) {
+        SERIAL_ECHOPGM("Y "); 
+        oldSteps = Y_MICROSTEPS_GET;
+        Y_MICROSTEPS_SET(code_value_byte());
+        newSteps = Y_MICROSTEPS_GET;
+        ratio = newSteps/oldSteps;
+        planner.axis_steps_per_mm[Y_AXIS] = planner.axis_steps_per_mm[Y_AXIS] * ratio;
+
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM(" old microsteps: ,");        
+        SERIAL_ECHOLN(oldSteps);        
+        SERIAL_ECHOPGM("new microsteps: ");
+        SERIAL_ECHOLN(newSteps);
+      }
+    #endif
+
+    #if ENABLED(Z_IS_TMC)
+      if (code_seen('Z')) {
+        SERIAL_ECHOPGM("Z "); 
+        oldSteps = Z_MICROSTEPS_GET;
+        Z_MICROSTEPS_SET(code_value_byte());
+        newSteps = Z_MICROSTEPS_GET;
+        ratio = newSteps/oldSteps;
+        planner.axis_steps_per_mm[Z_AXIS] = planner.axis_steps_per_mm[Z_AXIS] * ratio;
+
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM(" old microsteps: ,");        
+        SERIAL_ECHOLN(oldSteps);        
+        SERIAL_ECHOPGM("new microsteps: ");
+        SERIAL_ECHOLN(newSteps);
+      }
+    #endif
+
+    #if ENABLED(E0_IS_TMC)
+      if (code_seen('E')) {
+        SERIAL_ECHOPGM("E0 "); 
+        oldSteps = E0_MICROSTEPS_GET;
+        E0_MICROSTEPS_SET(code_value_byte());
+        newSteps = E0_MICROSTEPS_GET;
+        ratio = newSteps/oldSteps;
+        planner.axis_steps_per_mm[E_AXIS] = planner.axis_steps_per_mm[E_AXIS] * ratio;
+
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM(" old microsteps: ,");        
+        SERIAL_ECHOLN(oldSteps);        
+        SERIAL_ECHOPGM("new microsteps: ");
+        SERIAL_ECHOLN(newSteps);
+      }
+    #endif
+  #endif
+
+  planner.refresh_positioning();
+
   }
+
+  #if HAS_MICROSTEPS
 
   /**
    * M351: Toggle MS1 MS2 pins directly with axis codes X Y Z E B
@@ -8508,12 +8588,13 @@ void process_next_command() {
 
       #endif // HAS_DIGIPOTSS || DAC_STEPPER_CURRENT
 
-      #if HAS_MICROSTEPS
+      
 
         case 350: // M350: Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
           gcode_M350();
           break;
 
+      #if HAS_MICROSTEPS
         case 351: // M351: Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
           gcode_M351();
           break;
