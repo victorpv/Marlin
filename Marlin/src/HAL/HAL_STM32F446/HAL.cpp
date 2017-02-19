@@ -254,8 +254,8 @@ void delay(int milis) {
 }
 
 void delayMicroseconds(unsigned long us) {
-	unsigned long endTime = micros() + us;
-	while(micros() - endTime > 0);
+	uint32_t start = micros();
+	while((start+us) > micros());
 }
 
 long constrain(long val, long min, long max) {
