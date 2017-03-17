@@ -73,6 +73,8 @@ using std::abs;
 #define B01 1
 #define B10 2
 
+#include "binary.h"
+
 #include "main.h"
 #include "gpio.h"
 #include "adc.h"
