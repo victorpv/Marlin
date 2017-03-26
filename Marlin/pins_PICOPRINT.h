@@ -138,7 +138,8 @@
 
 #define FAN_PIN             _STM32_PIN(PORTD, 13)
 #define FAN1_PIN            _STM32_PIN(PORTA, 0)
-#define FAN2_PIN            _STM32_PIN(PORTA, 1)
+//#define FAN2_PIN          _STM32_PIN(PORTA, 1)
+#define E0_AUTO_FAN_PIN 	_STM32_PIN(PORTA, 1)
 
 //
 // Misc. Functions
