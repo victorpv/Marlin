@@ -259,11 +259,11 @@ static void lcd_set_custom_characters(
     B00000
   }; //thanks Sonny Mounicou
 
-  lcd.createChar(LCD_STR_BEDTEMP[0], bedTemp);
-  lcd.createChar(LCD_STR_DEGREE[0], degree);
-  lcd.createChar(LCD_STR_THERMOMETER[0], thermometer);
-  lcd.createChar(LCD_STR_FEEDRATE[0], feedrate);
-  lcd.createChar(LCD_STR_CLOCK[0], clock);
+  lcd.createChar(LCD_STR_BEDTEMP[0], (uint8_t*)bedTemp);
+  lcd.createChar(LCD_STR_DEGREE[0], (uint8_t*)degree);
+  lcd.createChar(LCD_STR_THERMOMETER[0], (uint8_t*)thermometer);
+  lcd.createChar(LCD_STR_FEEDRATE[0], (uint8_t*)feedrate);
+  lcd.createChar(LCD_STR_CLOCK[0], (uint8_t*)clock);
 
   #if ENABLED(SDSUPPORT)
     static byte refresh[8] = {
@@ -320,22 +320,22 @@ static void lcd_set_custom_characters(
       if (info_screen_charset != char_mode) {
         char_mode = info_screen_charset;
         if (info_screen_charset) { // Progress bar characters for info screen
-          for (int i = 3; i--;) lcd.createChar(LCD_STR_PROGRESS[i], progress[i]);
+          for (int i = 3; i--;) lcd.createChar(LCD_STR_PROGRESS[i], (uint8_t*)progress[i]);
         }
         else { // Custom characters for submenus
-          lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
-          lcd.createChar(LCD_STR_REFRESH[0], refresh);
-          lcd.createChar(LCD_STR_FOLDER[0], folder);
+          lcd.createChar(LCD_STR_UPLEVEL[0], (uint8_t*)uplevel);
+          lcd.createChar(LCD_STR_REFRESH[0], (uint8_t*)refresh);
+          lcd.createChar(LCD_STR_FOLDER[0], (uint8_t*)folder);
         }
       }
     #else
-      lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
-      lcd.createChar(LCD_STR_REFRESH[0], refresh);
-      lcd.createChar(LCD_STR_FOLDER[0], folder);
+      lcd.createChar(LCD_STR_UPLEVEL[0], (uint8_t*)uplevel);
+      lcd.createChar(LCD_STR_REFRESH[0], (uint8_t*)refresh);
+      lcd.createChar(LCD_STR_FOLDER[0], (uint8_t*)folder);
     #endif
 
   #else
-    lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
+    lcd.createChar(LCD_STR_UPLEVEL[0], (uint8_t*)uplevel);
   #endif
 }
 
@@ -459,10 +459,10 @@ void lcd_print(char c) { charset_mapper(c); }
       B00000,
       B00000
     };
-    lcd.createChar(0, top_left);
-    lcd.createChar(1, top_right);
-    lcd.createChar(2, botom_left);
-    lcd.createChar(3, botom_right);
+    lcd.createChar(0, (uint8_t*)top_left);
+    lcd.createChar(1, (uint8_t*)top_right);
+    lcd.createChar(2, (uint8_t*)botom_left);
+    lcd.createChar(3, (uint8_t*)botom_right);
 
     lcd.clear();
 
