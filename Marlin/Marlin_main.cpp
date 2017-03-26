@@ -7269,6 +7269,124 @@ inline void gcode_M906() {
 
 }
 
+inline void gcode_M911() {
+	TMC26XStepper *stepper;
+	bool proceed = true;
+
+	if (code_seen('X')) {
+		extern TMC26XStepper stepperX;
+		stepper = &stepperX;
+	} else if (code_seen('Y')) {
+		extern TMC26XStepper stepperY;
+		stepper = &stepperY;
+	} else if (code_seen('Z')) {
+		extern TMC26XStepper stepperZ;
+		stepper = &stepperZ;
+	} else if (code_seen('E')) {
+		extern TMC26XStepper stepperE0;
+		stepper = &stepperE0;
+	} else {
+		proceed = false;
+	}
+
+
+	byte mode = 0, cot = 0, bt = 0;
+	byte fdts = 0, swo = 0, ucc = 0;
+	byte hyst_start = 0, hyst_end = 0, hyst_dec = 0;
+
+	if(code_seen('M')) {
+		mode = code_value_byte();
+	} else {
+		SERIAL_ECHOLN("Please specify M");
+		proceed = false;
+	}
+
+	if(code_seen('C')) {
+		cot = code_value_byte();
+	} else {
+		SERIAL_ECHOLN("Please specify C");
+		proceed = false;
+	}
+
+	if(code_seen('B')) {
+		bt = code_value_byte();
+	} else {
+		SERIAL_ECHOLN("Please specify B");
+		proceed = false;
+	}
+
+	//Constant Off Time Chopper Settings
+	if(mode == 0) {
+		SERIAL_ECHOLN("Constant Off Time Chopper Mode");
+		if(code_seen('F')) {
+			fdts = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify F");
+			proceed = false;
+		}
+
+		if(code_seen('S')) {
+			swo = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify S");
+			proceed = false;
+		}
+
+		if(code_seen('U')) {
+			ucc = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify U");
+			proceed = false;
+		}
+	}
+
+	//Spread Cycle Chopper Settings
+	if(mode == 1) {
+		SERIAL_ECHOLN("Spread Cycle Chopper Mode");
+		if(code_seen('S')) {
+			hyst_start = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify S");
+			proceed = false;
+		}
+
+		if(code_seen('F')) {
+			hyst_end = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify F");
+			proceed = false;
+		}
+
+		if(code_seen('D')) {
+			hyst_dec = code_value_byte();
+		} else {
+			SERIAL_ECHOLN("Please specify D");
+			proceed = false;
+		}
+	}
+
+
+	if(proceed) {
+		SERIAL_ECHOLNPAIR("Constant Off Time:\t ",cot);
+		SERIAL_ECHOLNPAIR("Blank Time:\t ",bt);
+
+		if(mode == 0) {
+			SERIAL_ECHOLNPAIR("Fast Decay Time:\t ",fdts);
+			SERIAL_ECHOLNPAIR("Sine Wave Offset:\t ",swo);
+			SERIAL_ECHOLNPAIR("Use Current Comparator:\t ",ucc);
+			stepper->setConstantOffTimeChopper(cot,bt,fdts,swo,ucc);
+		} else if (mode == 1) {
+			SERIAL_ECHOLNPAIR("Hysteresis Start:\t ",hyst_start);
+			SERIAL_ECHOLNPAIR("Hysteresis End:\t ",hyst_end);
+			SERIAL_ECHOLNPAIR("Hysteresis Decrement:\t ",hyst_dec);
+			stepper->setSpreadCycleChopper(cot,bt,hyst_start,hyst_end,hyst_dec);
+		}
+		SERIAL_ECHOLN("Command Sent");
+	}
+
+
+}
+
 /**
  * M907: Set digital trimpot motor current using axis codes X, Y, Z, E, B, S
  */
@@ -8587,6 +8705,10 @@ void process_next_command() {
         #endif
 
       #endif // HAS_DIGIPOTSS || DAC_STEPPER_CURRENT
+
+          case 911: // M911: Adjust TMC2660 Chopper Settings
+                      gcode_M911();
+                      break;
 
       
 
