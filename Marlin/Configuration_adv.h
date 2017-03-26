@@ -720,43 +720,43 @@
   //#define E2_IS_TMC
   //#define E3_IS_TMC
 
-  #define X_MAX_CURRENT      300 // in mA
+  #define X_MAX_CURRENT       300 // in mA
   #define X_SENSE_RESISTOR    50 // in mOhms
   #define X_MICROSTEPS        256 // number of microsteps
 
-  #define X2_MAX_CURRENT     300
+  #define X2_MAX_CURRENT      300
   #define X2_SENSE_RESISTOR   50
   #define X2_MICROSTEPS       256
 
-  #define Y_MAX_CURRENT      300
+  #define Y_MAX_CURRENT       300
   #define Y_SENSE_RESISTOR    50
   #define Y_MICROSTEPS        256
 
-  #define Y2_MAX_CURRENT     300
+  #define Y2_MAX_CURRENT      300
   #define Y2_SENSE_RESISTOR   50
   #define Y2_MICROSTEPS       256
 
-  #define Z_MAX_CURRENT      300
+  #define Z_MAX_CURRENT       600
   #define Z_SENSE_RESISTOR    50
   #define Z_MICROSTEPS        256
 
-  #define Z2_MAX_CURRENT     300
+  #define Z2_MAX_CURRENT      300
   #define Z2_SENSE_RESISTOR   50
   #define Z2_MICROSTEPS       256
 
-  #define E0_MAX_CURRENT     300
+  #define E0_MAX_CURRENT      300
   #define E0_SENSE_RESISTOR   50
-  #define E0_MICROSTEPS       256
+  #define E0_MICROSTEPS       32
 
-  #define E1_MAX_CURRENT     300
+  #define E1_MAX_CURRENT      300
   #define E1_SENSE_RESISTOR   50
   #define E1_MICROSTEPS       256
 
-  #define E2_MAX_CURRENT     300
+  #define E2_MAX_CURRENT      300
   #define E2_SENSE_RESISTOR   50
   #define E2_MICROSTEPS       256
 
-  #define E3_MAX_CURRENT     300
+  #define E3_MAX_CURRENT      300
   #define E3_SENSE_RESISTOR   50
   #define E3_MICROSTEPS       256
 

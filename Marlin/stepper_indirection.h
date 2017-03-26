@@ -83,7 +83,7 @@
     #define X_ENABLE_INIT NOOP
     #define X_ENABLE_WRITE(STATE) stepperX.setEnabled(STATE)
     #define X_ENABLE_READ stepperX.isEnabled()
-	  #define X_CURRENT_SET(c) stepperX.setCurrent(c)
+	#define X_CURRENT_SET(c) stepperX.setCurrent(c)
     #define X_MICROSTEPS_SET(m) stepperX.setMicrosteps(m)
     #define X_MICROSTEPS_GET stepperX.getMicrosteps()
   #else
