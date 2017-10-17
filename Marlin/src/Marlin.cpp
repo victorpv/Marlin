@@ -681,7 +681,11 @@ void setup() {
   #endif
 
   MYSERIAL.begin(BAUDRATE);
-  while(!MYSERIAL);
+  while(!MYSERIAL){
+    watchdog_reset();
+    delay(250);
+  }
+
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START();
 
