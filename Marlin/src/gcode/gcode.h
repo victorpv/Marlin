@@ -55,7 +55,7 @@
  * G19  - Select Plane YZ (Requires CNC_WORKSPACE_PLANES)
  * G20  - Set input units to inches (Requires INCH_MODE_SUPPORT)
  * G21  - Set input units to millimeters (Requires INCH_MODE_SUPPORT)
- * G26  - Mesh Validation Pattern (Requires UBL_G26_MESH_VALIDATION)
+ * G26  - Mesh Validation Pattern (Requires G26_MESH_VALIDATION)
  * G27  - Park Nozzle (Requires NOZZLE_PARK_FEATURE)
  * G28  - Home one or more axes
  * G29  - Start or continue the bed leveling probe procedure (Requires bed leveling)
@@ -64,7 +64,7 @@
  * G32  - Undock sled (Z_PROBE_SLED only)
  * G33  - Delta Auto-Calibration (Requires DELTA_AUTO_CALIBRATION)
  * G38  - Probe in any direction using the Z_MIN_PROBE (Requires G38_PROBE_TARGET)
- * G42  - Coordinated move to a mesh point (Requires HAS_MESH)
+ * G42  - Coordinated move to a mesh point (Requires MESH_BED_LEVELING, AUTO_BED_LEVELING_BLINEAR, or AUTO_BED_LEVELING_UBL)
  * G90  - Use Absolute Coordinates
  * G91  - Use Relative Coordinates
  * G92  - Set current position to coordinates given
@@ -113,8 +113,8 @@
  * M100 - Watch Free Memory (for debugging) (Requires M100_FREE_MEMORY_WATCHER)
  * M104 - Set extruder target temp.
  * M105 - Report current temperatures.
- * M106 - Fan on.
- * M107 - Fan off.
+ * M106 - Set print fan speed.
+ * M107 - Print fan off.
  * M108 - Break out of heating loops (M109, M190, M303). With no controller, breaks out of M0/M1. (Requires EMERGENCY_PARSER)
  * M109 - Sxxx Wait for extruder current temp to reach target temp. Waits only when heating
  *        Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
@@ -138,7 +138,7 @@
  * M140 - Set bed target temp. S<temp>
  * M145 - Set heatup values for materials on the LCD. H<hotend> B<bed> F<fan speed> for S<material> (0=PLA, 1=ABS)
  * M149 - Set temperature units. (Requires TEMPERATURE_UNITS_SUPPORT)
- * M150 - Set Status LED Color as R<red> U<green> B<blue>. Values 0-255. (Requires BLINKM, RGB_LED, RGBW_LED, or PCA9632)
+ * M150 - Set Status LED Color as R<red> U<green> B<blue> P<bright>. Values 0-255. (Requires BLINKM, RGB_LED, RGBW_LED, NEOPIXEL_LED, or PCA9632).
  * M155 - Auto-report temperatures with interval of S<seconds>. (Requires AUTO_REPORT_TEMPERATURES)
  * M163 - Set a single proportion for a mixing extruder. (Requires MIXING_EXTRUDER)
  * M164 - Save the mix as a virtual extruder. (Requires MIXING_EXTRUDER and MIXING_VIRTUAL_TOOLS)
@@ -169,6 +169,7 @@
  * M260 - i2c Send Data (Requires EXPERIMENTAL_I2CBUS)
  * M261 - i2c Request Data (Requires EXPERIMENTAL_I2CBUS)
  * M280 - Set servo position absolute: "M280 P<index> S<angle|µs>". (Requires servos)
+ * M290 - Babystepping (Requires BABYSTEPPING)
  * M300 - Play beep sound S<frequency Hz> P<duration ms>
  * M301 - Set PID parameters P I and D. (Requires PIDTEMP)
  * M302 - Allow cold extrudes, or set the minimum extrude S<temperature>. (Requires PREVENT_COLD_EXTRUSION)
@@ -200,6 +201,7 @@
  * M666 - Set delta endstop adjustment. (Requires DELTA)
  * M605 - Set dual x-carriage movement mode: "M605 S<mode> [X<x_offset>] [R<temp_offset>]". (Requires DUAL_X_CARRIAGE)
  * M851 - Set Z probe's Z offset in current units. (Negative = below the nozzle.)
+ * M852 - Set skew factors: "M852 [I<xy>] [J<xz>] [K<yz>]". (Requires SKEW_CORRECTION_GCODE, and SKEW_CORRECTION_FOR_Z for IJ)
  * M860 - Report the position of position encoder modules.
  * M861 - Report the status of position encoder modules.
  * M862 - Perform an axis continuity test for position encoder modules.
@@ -265,11 +267,19 @@ public:
     static WorkspacePlane workspace_plane;
   #endif
 
+  #if ENABLED(CNC_COORDINATE_SYSTEMS)
+    #define MAX_COORDINATE_SYSTEMS 9
+    static int8_t active_coordinate_system;
+    static float coordinate_system[MAX_COORDINATE_SYSTEMS][XYZ];
+    static bool select_coordinate_system(const int8_t _new);
+  #endif
+
   static millis_t previous_cmd_ms;
   FORCE_INLINE static void refresh_cmd_timeout() { previous_cmd_ms = millis(); }
 
   static bool get_target_extruder_from_command();
   static void get_destination_from_command();
+  static void process_parsed_command();
   static void process_next_command();
 
   static FORCE_INLINE void home_all_axes() { G28(true); }
@@ -348,7 +358,7 @@ private:
     static void G21();
   #endif
 
-  #if ENABLED(UBL_G26_MESH_VALIDATION)
+  #if ENABLED(G26_MESH_VALIDATION)
     static void G26();
   #endif
 
@@ -370,7 +380,7 @@ private:
     #endif
   #endif
 
-  #if PROBE_SELECTED && ENABLED(DELTA_AUTO_CALIBRATION)
+  #if ENABLED(DELTA_AUTO_CALIBRATION)
     static void G33();
   #endif
 
@@ -380,6 +390,17 @@ private:
 
   #if HAS_MESH
     static void G42();
+  #endif
+
+  #if ENABLED(CNC_COORDINATE_SYSTEMS)
+    bool select_coordinate_system(const int8_t _new);
+    static void G53();
+    static void G54();
+    static void G55();
+    static void G56();
+    static void G57();
+    static void G58();
+    static void G59();
   #endif
 
   static void G92();
@@ -433,8 +454,12 @@ private:
     static void M48();
   #endif
 
-  #if ENABLED(UBL_G26_MESH_VALIDATION)
+  #if ENABLED(G26_MESH_VALIDATION)
     static void M49();
+  #endif
+
+  #if ENABLED(ULTRA_LCD) && ENABLED(LCD_SET_PROGRESS_MANUALLY)
+    static void M73();
   #endif
 
   static void M75();
@@ -581,6 +606,10 @@ private:
     static void M280();
   #endif
 
+  #if ENABLED(BABYSTEPPING)
+    static void M290();
+  #endif
+
   #if HAS_BUZZER
     static void M300();
   #endif
@@ -675,6 +704,10 @@ private:
 
   #if HAS_BED_PROBE
     static void M851();
+  #endif
+
+  #if ENABLED(SKEW_CORRECTION_GCODE)
+    static void M852();
   #endif
 
   #if ENABLED(I2C_POSITION_ENCODERS)

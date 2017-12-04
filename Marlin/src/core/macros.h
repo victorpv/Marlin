@@ -28,6 +28,13 @@
 #define ABC  3
 #define XYZ  3
 
+#define _XMIN_ 100
+#define _YMIN_ 200
+#define _ZMIN_ 300
+#define _XMAX_ 101
+#define _YMAX_ 201
+#define _ZMAX_ 301
+
 #define FORCE_INLINE __attribute__((always_inline)) inline
 #define _UNUSED      __attribute__((unused))
 #define _O0          __attribute__((optimize("O0")))
@@ -35,7 +42,6 @@
 #define _O1          __attribute__((optimize("O1")))
 #define _O2          __attribute__((optimize("O2")))
 #define _O3          __attribute__((optimize("O3")))
-
 
 // Clock speed factors
 #define CYCLES_PER_MICROSECOND (F_CPU / 1000000L) // 16 or 20
@@ -89,6 +95,9 @@
 #define STRINGIFY(M) STRINGIFY_(M)
 
 // Macros for bit masks
+#ifndef _BV
+  #define _BV(n)  (1<<(n))
+#endif
 #define TEST(n,b) (((n)&_BV(b))!=0)
 #define SBI(n,b) (n |= _BV(b))
 #define CBI(n,b) (n &= ~_BV(b))

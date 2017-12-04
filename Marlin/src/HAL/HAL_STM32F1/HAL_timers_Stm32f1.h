@@ -43,44 +43,28 @@
  */
 #define FORCE_INLINE __attribute__((always_inline)) inline
 
-#define HAL_TIMER_TYPE uint16_t
+typedef uint16_t hal_timer_t;
 #define HAL_TIMER_TYPE_MAX 0xFFFF
 
-#ifdef MCU_STM32F103CB  || defined(MCU_STM32F103C8)
-  #define STEP_TIMER_NUM 4 // For C8/CB boards, use timer 4
-#else
-  #define STEP_TIMER_NUM 5 // for other boards, five is fine.
-#endif
-
+#define STEP_TIMER_NUM 5  // index of timer to use for stepper
 #define STEP_TIMER_CHAN 1 // Channel of the timer to use for compare and interrupts
 #define TEMP_TIMER_NUM 2  // index of timer to use for temperature
 #define TEMP_TIMER_CHAN 1 // Channel of the timer to use for compare and interrupts
 
-#define CAT(a, ...) a ## __VA_ARGS__
-#define TIMER_DEV(num) CAT (&timer, num)
-
-#define STEP_TIMER_DEV TIMER_DEV(STEP_TIMER_NUM)
-#define TEMP_TIMER_DEV TIMER_DEV(TEMP_TIMER_NUM)
-
-
-
-//STM32_HAVE_TIMER(n);
 
 #define HAL_TIMER_RATE         (F_CPU)  // frequency of timers peripherals
-#define STEPPER_TIMER_PRESCALE 18             // prescaler for setting stepper timer, 4Mhz
+#define STEPPER_TIMER_PRESCALE 36             // prescaler for setting stepper timer, 2Mhz
 #define HAL_STEPPER_TIMER_RATE (HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE)   // frequency of stepper timer (HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE)
 #define HAL_TICKS_PER_US       ((HAL_STEPPER_TIMER_RATE) / 1000000) // stepper timer ticks per us
 
 #define TEMP_TIMER_PRESCALE     1000 // prescaler for setting Temp timer, 72Khz
-#define TEMP_TIMER_FREQUENCY    100 // temperature interrupt frequency
+#define TEMP_TIMER_FREQUENCY    1000 // temperature interrupt frequency
 
-#define ENABLE_STEPPER_DRIVER_INTERRUPT() timer_enable_irq(STEP_TIMER_DEV, STEP_TIMER_CHAN)
-#define DISABLE_STEPPER_DRIVER_INTERRUPT() timer_disable_irq(STEP_TIMER_DEV, STEP_TIMER_CHAN)
+#define ENABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_enable_interrupt (STEP_TIMER_NUM)
+#define DISABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_disable_interrupt (STEP_TIMER_NUM)
 
-#define ENABLE_TEMPERATURE_INTERRUPT() timer_enable_irq(TEMP_TIMER_DEV, TEMP_TIMER_CHAN)
-#define DISABLE_TEMPERATURE_INTERRUPT() timer_disable_irq(TEMP_TIMER_DEV, TEMP_TIMER_CHAN)
-
-#define HAL_timer_get_current_count(timer_num) timer_get_count(TIMER_DEV(timer_num))
+#define ENABLE_TEMPERATURE_INTERRUPT() HAL_timer_enable_interrupt (TEMP_TIMER_NUM)
+#define DISABLE_TEMPERATURE_INTERRUPT() HAL_timer_disable_interrupt (TEMP_TIMER_NUM)
 
 #define HAL_ENABLE_ISRs() do { if (thermalManager.in_temp_isr)DISABLE_TEMPERATURE_INTERRUPT(); else ENABLE_TEMPERATURE_INTERRUPT(); ENABLE_STEPPER_DRIVER_INTERRUPT(); } while(0)
 // TODO change this
@@ -123,44 +107,76 @@ void HAL_timer_disable_interrupt(uint8_t timer_num);
  * Todo: Look at that possibility later.
  */
 
-static FORCE_INLINE void HAL_timer_set_count (uint8_t timer_num, HAL_TIMER_TYPE count) {
-  count = min(count, HAL_TIMER_TYPE_MAX);
+static FORCE_INLINE void HAL_timer_set_count (uint8_t timer_num, uint32_t count) {
   switch (timer_num) {
   case STEP_TIMER_NUM:
-    timer_set_compare(STEP_TIMER_DEV, STEP_TIMER_CHAN, count);
-    return;
+    StepperTimer.pause();
+    StepperTimer.setCompare (STEP_TIMER_CHAN, count);
+    StepperTimer.refresh ();
+    StepperTimer.resume ();
+    break;
   case TEMP_TIMER_NUM:
-    timer_set_compare(TEMP_TIMER_DEV, TEMP_TIMER_CHAN, count);
-    return;
+    TempTimer.pause();
+    TempTimer.setCompare (TEMP_TIMER_CHAN, count);
+    TempTimer.refresh ();
+    TempTimer.resume ();
+    break;
   default:
-    return;
+    break;
   }
 }
 
-static FORCE_INLINE HAL_TIMER_TYPE HAL_timer_get_count (uint8_t timer_num) {
+static FORCE_INLINE hal_timer_t HAL_timer_get_count (uint8_t timer_num) {
+  hal_timer_t temp;
   switch (timer_num) {
   case STEP_TIMER_NUM:
-    return timer_get_compare(STEP_TIMER_DEV, STEP_TIMER_CHAN);
+    temp = StepperTimer.getCompare(STEP_TIMER_CHAN);
+    break;
   case TEMP_TIMER_NUM:
-    return timer_get_compare(TEMP_TIMER_DEV, TEMP_TIMER_CHAN);
+    temp = TempTimer.getCompare(TEMP_TIMER_CHAN);
+    break;
   default:
-    return 0;
+    temp = 0;
+    break;
   }
+  return temp;
 }
 
+static FORCE_INLINE hal_timer_t HAL_timer_get_current_count(uint8_t timer_num) {
+  hal_timer_t temp;
+  switch (timer_num) {
+  case STEP_TIMER_NUM:
+    temp = StepperTimer.getCount();
+    break;
+  case TEMP_TIMER_NUM:
+    temp = TempTimer.getCount();
+    break;
+  default:
+    temp = 0;
+    break;
+  }
+  return temp;
+}
+
+
+//void HAL_timer_isr_prologue (uint8_t timer_num);
 
 static FORCE_INLINE void HAL_timer_isr_prologue(uint8_t timer_num) {
   switch (timer_num) {
   case STEP_TIMER_NUM:
-    timer_set_count(STEP_TIMER_DEV, 0);
-    timer_generate_update(STEP_TIMER_DEV);
-    return;
+    StepperTimer.pause();
+    StepperTimer.setCount(0);
+    StepperTimer.refresh();
+    StepperTimer.resume();
+    break;
   case TEMP_TIMER_NUM:
-    timer_set_count(TEMP_TIMER_DEV, 0);
-    timer_generate_update(TEMP_TIMER_DEV);
-    return;
+    TempTimer.pause();
+    TempTimer.setCount(0);
+    TempTimer.refresh();
+    TempTimer.resume();
+    break;
   default:
-    return;
+    break;
   }
 }
 

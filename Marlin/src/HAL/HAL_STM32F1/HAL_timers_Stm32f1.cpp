@@ -59,15 +59,15 @@
 // --------------------------------------------------------------------------
 /* VGPV
 const tTimerConfig TimerConfig [NUM_HARDWARE_TIMERS] = {
-{ TC0, 0, TC0_IRQn, 0},  // 0 - [servo timer5]
-{ TC0, 1, TC1_IRQn, 0},  // 1
-{ TC0, 2, TC2_IRQn, 0},  // 2
-{ TC1, 0, TC3_IRQn, 2},  // 3 - stepper
-{ TC1, 1, TC4_IRQn, 15}, // 4 - temperature
-{ TC1, 2, TC5_IRQn, 0},  // 5 - [servo timer3]
-{ TC2, 0, TC6_IRQn, 0},  // 6
-{ TC2, 1, TC7_IRQn, 0},  // 7
-{ TC2, 2, TC8_IRQn, 0},  // 8
+  { TC0, 0, TC0_IRQn, 0},  // 0 - [servo timer5]
+  { TC0, 1, TC1_IRQn, 0},  // 1
+  { TC0, 2, TC2_IRQn, 0},  // 2
+  { TC1, 0, TC3_IRQn, 2},  // 3 - stepper
+  { TC1, 1, TC4_IRQn, 15}, // 4 - temperature
+  { TC1, 2, TC5_IRQn, 0},  // 5 - [servo timer3]
+  { TC2, 0, TC6_IRQn, 0},  // 6
+  { TC2, 1, TC7_IRQn, 0},  // 7
+  { TC2, 2, TC8_IRQn, 0},  // 8
 };
 */
 // --------------------------------------------------------------------------
@@ -83,52 +83,24 @@ const tTimerConfig TimerConfig [NUM_HARDWARE_TIMERS] = {
 // --------------------------------------------------------------------------
 
 /*
-Timer_clock1: Prescaler 2 -> 36MHz
-Timer_clock2: Prescaler 8 -> 9MHz
-Timer_clock3: Prescaler 32 -> 2.25MHz
-Timer_clock4: Prescaler 128 -> 562.5kHz
+Timer_clock1: Prescaler 2 -> 42MHz
+Timer_clock2: Prescaler 8 -> 10.5MHz
+Timer_clock3: Prescaler 32 -> 2.625MHz
+Timer_clock4: Prescaler 128 -> 656.25kHz
 */
 
 /**
  * TODO: Calculate Timer prescale value, so we get the 32bit to adjust
  */
 
-void HAL_timer_start (uint8_t timer_num, uint32_t frequency) {
-  nvic_irq_num irq_num;
-  switch (timer_num) {
-  case 1:
-      irq_num = NVIC_TIMER1_CC;
-      break;
-  case 2:
-      irq_num = NVIC_TIMER2;
-      break;
-  case 3:
-      irq_num = NVIC_TIMER3;
-      break;
-  case 4:
-      irq_num = NVIC_TIMER4;
-      break;
-  case 5:
-      irq_num = NVIC_TIMER5;
-      break;
-  default:
-      /*
-       *  We should not get here, add Sanitycheck for timer number. Should be a general timer
-       *  since basic timers do not have CC channels.
-       *  Advanced timers should be skipped if possible too, and are not listed above.
-       */
-      break;
-  }
-  nvic_irq_set_priority(irq_num, 0xF); // this is the lowest settable priority, but should still be over USB
-
+void HAL_timer_start(uint8_t timer_num, uint32_t frequency) {
   switch (timer_num) {
     case STEP_TIMER_NUM:
       StepperTimer.pause();
       StepperTimer.setCount(0);
       StepperTimer.setPrescaleFactor(STEPPER_TIMER_PRESCALE);
       StepperTimer.setOverflow(0xFFFF);
-      StepperTimer.setCompare (STEP_TIMER_CHAN, min(HAL_TIMER_TYPE_MAX, (HAL_STEPPER_TIMER_RATE / frequency)));
-      StepperTimer.attachInterrupt(STEP_TIMER_CHAN, stepTC_Handler);
+      StepperTimer.setCompare(STEP_TIMER_CHAN, uint32_t(HAL_STEPPER_TIMER_RATE) / frequency);
       StepperTimer.refresh();
       StepperTimer.resume();
       break;
@@ -137,15 +109,14 @@ void HAL_timer_start (uint8_t timer_num, uint32_t frequency) {
       TempTimer.setCount(0);
       TempTimer.setPrescaleFactor(TEMP_TIMER_PRESCALE);
       TempTimer.setOverflow(0xFFFF);
-      TempTimer.setCompare (TEMP_TIMER_CHAN, min(HAL_TIMER_TYPE_MAX, ((F_CPU / TEMP_TIMER_PRESCALE) / frequency)));
-      TempTimer.attachInterrupt(TEMP_TIMER_CHAN, tempTC_Handler);
+      TempTimer.setCompare(TEMP_TIMER_CHAN, (F_CPU) / (TEMP_TIMER_PRESCALE) / frequency);
       TempTimer.refresh();
       TempTimer.resume();
       break;
   }
 }
 
-void HAL_timer_enable_interrupt (uint8_t timer_num) {
+void HAL_timer_enable_interrupt(uint8_t timer_num) {
   switch (timer_num) {
     case STEP_TIMER_NUM:
       StepperTimer.attachInterrupt(STEP_TIMER_CHAN, stepTC_Handler);
@@ -158,7 +129,7 @@ void HAL_timer_enable_interrupt (uint8_t timer_num) {
   }
 }
 
-void HAL_timer_disable_interrupt (uint8_t timer_num) {
+void HAL_timer_disable_interrupt(uint8_t timer_num) {
   switch (timer_num) {
     case STEP_TIMER_NUM:
       StepperTimer.detachInterrupt(STEP_TIMER_CHAN);
