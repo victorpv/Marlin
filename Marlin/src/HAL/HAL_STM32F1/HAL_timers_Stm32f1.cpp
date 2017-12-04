@@ -59,15 +59,15 @@
 // --------------------------------------------------------------------------
 /* VGPV
 const tTimerConfig TimerConfig [NUM_HARDWARE_TIMERS] = {
-{ TC0, 0, TC0_IRQn, 0},  // 0 - [servo timer5]
-{ TC0, 1, TC1_IRQn, 0},  // 1
-{ TC0, 2, TC2_IRQn, 0},  // 2
-{ TC1, 0, TC3_IRQn, 2},  // 3 - stepper
-{ TC1, 1, TC4_IRQn, 15}, // 4 - temperature
-{ TC1, 2, TC5_IRQn, 0},  // 5 - [servo timer3]
-{ TC2, 0, TC6_IRQn, 0},  // 6
-{ TC2, 1, TC7_IRQn, 0},  // 7
-{ TC2, 2, TC8_IRQn, 0},  // 8
+  { TC0, 0, TC0_IRQn, 0},  // 0 - [servo timer5]
+  { TC0, 1, TC1_IRQn, 0},  // 1
+  { TC0, 2, TC2_IRQn, 0},  // 2
+  { TC1, 0, TC3_IRQn, 2},  // 3 - stepper
+  { TC1, 1, TC4_IRQn, 15}, // 4 - temperature
+  { TC1, 2, TC5_IRQn, 0},  // 5 - [servo timer3]
+  { TC2, 0, TC6_IRQn, 0},  // 6
+  { TC2, 1, TC7_IRQn, 0},  // 7
+  { TC2, 2, TC8_IRQn, 0},  // 8
 };
 */
 // --------------------------------------------------------------------------
@@ -93,7 +93,7 @@ Timer_clock4: Prescaler 128 -> 562.5kHz
  * TODO: Calculate Timer prescale value, so we get the 32bit to adjust
  */
 
-void HAL_timer_start (uint8_t timer_num, uint32_t frequency) {
+void HAL_timer_start(uint8_t timer_num, uint32_t frequency) {
   nvic_irq_num irq_num;
   switch (timer_num) {
   case 1:
@@ -145,7 +145,7 @@ void HAL_timer_start (uint8_t timer_num, uint32_t frequency) {
   }
 }
 
-void HAL_timer_enable_interrupt (uint8_t timer_num) {
+void HAL_timer_enable_interrupt(uint8_t timer_num) {
   switch (timer_num) {
     case STEP_TIMER_NUM:
       StepperTimer.attachInterrupt(STEP_TIMER_CHAN, stepTC_Handler);
@@ -158,7 +158,7 @@ void HAL_timer_enable_interrupt (uint8_t timer_num) {
   }
 }
 
-void HAL_timer_disable_interrupt (uint8_t timer_num) {
+void HAL_timer_disable_interrupt(uint8_t timer_num) {
   switch (timer_num) {
     case STEP_TIMER_NUM:
       StepperTimer.detachInterrupt(STEP_TIMER_CHAN);

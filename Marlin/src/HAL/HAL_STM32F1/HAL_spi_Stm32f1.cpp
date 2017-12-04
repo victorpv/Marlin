@@ -37,7 +37,7 @@
 // --------------------------------------------------------------------------
 
 #include "../HAL.h"
-#include "SPI.h"
+#include "../SPI.h"
 #include "pins_arduino.h"
 #include "spi_pins.h"
 #include "../../core/macros.h"
@@ -76,7 +76,7 @@ static SPISettings spiConfig;
  * @details Only configures SS pin since libmaple creates and initialize the SPI object
  */
 void spiBegin() {
-  #ifndef SS_PIN
+  #if !PIN_EXISTS(SS)
     #error "SS_PIN not defined!"
   #endif
   SET_OUTPUT(SS_PIN);

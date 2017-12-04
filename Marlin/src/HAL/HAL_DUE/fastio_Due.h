@@ -21,9 +21,10 @@
  */
 
 /**
-  This code contributed by Triffid_Hunter and modified by Kliment
-  why double up on these macros? see http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
-*/
+ * Fast I/O Routines for SAM3X8E
+ * Use direct port manipulation to save scads of processor time.
+ * Contributed by Triffid_Hunter and modified by Kliment, thinkyhead, Bob-the-Kuhn, et.al.
+ */
 
 /**
  * Description: Fast IO functions for Arduino Due and compatible (SAM3X8E)
@@ -35,17 +36,20 @@
 #define _FASTIO_DUE_H
 
 /**
-  utility functions
-*/
+ * Utility functions
+ */
 
 #ifndef MASK
   #define MASK(PIN)  (1 << PIN)
 #endif
 
 /**
-  magic I/O routines
-  now you can simply SET_OUTPUT(STEP); WRITE(STEP, 1); WRITE(STEP, 0);
-*/
+ * Magic I/O routines
+ *
+ * Now you can simply SET_OUTPUT(STEP); WRITE(STEP, HIGH); WRITE(STEP, LOW);
+ *
+ * Why double up on these macros? see http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
+ */
 
 /// Read a pin
 #define _READ(IO) ((bool)(DIO ## IO ## _WPORT -> PIO_PDSR & (MASK(DIO ## IO ## _PIN))))
@@ -80,8 +84,6 @@
 /// check if pin is an timer
 #define _GET_TIMER(IO)
 
-//  why double up on these macros? see http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
-
 /// Read a pin wrapper
 #define READ(IO)  _READ(IO)
 
@@ -111,10 +113,9 @@
 #define OUT_WRITE(IO, v) { SET_OUTPUT(IO); WRITE(IO, v); }
 
 /**
-  ports and functions
-
-  added as necessary or if I feel like it- not a comprehensive list!
-*/
+ * Ports and functions
+ * Added as necessary or if I feel like it- not a comprehensive list!
+ */
 
 // UART
 #define RXD        DIO0
@@ -125,8 +126,8 @@
 #define SDA        DIO20
 
 /**
-pins
-*/
+ * pins
+ */
 
 #define DIO0_PIN 8
 #define DIO0_WPORT PIOA
@@ -404,31 +405,81 @@ pins
 #define DIO91_PIN 15
 #define DIO91_WPORT PIOB
 
-#define DIO92_PIN 5
-#define DIO92_WPORT PIOA
+#if ARDUINO_SAM_ARCHIM
+  #define DIO92_PIN 11
+  #define DIO92_WPORT PIOC
 
-#define DIO93_PIN 12
-#define DIO93_WPORT PIOB
+  #define DIO93_PIN 2
+  #define DIO93_WPORT PIOB
 
-#define DIO94_PIN 22
-#define DIO94_WPORT PIOB
+  #define DIO94_PIN 1
+  #define DIO94_WPORT PIOB
 
-#define DIO95_PIN 23
-#define DIO95_WPORT PIOB
+  #define DIO95_PIN 0
+  #define DIO95_WPORT PIOB
 
-#define DIO96_PIN 24
-#define DIO96_WPORT PIOB
+  #define DIO96_PIN 10
+  #define DIO96_WPORT PIOC
 
-#define DIO97_PIN 20
-#define DIO97_WPORT PIOC
+  #define DIO97_PIN 24
+  #define DIO97_WPORT PIOB
 
-#define DIO98_PIN 27
-#define DIO98_WPORT PIOC
+  #define DIO98_PIN 7
+  #define DIO98_WPORT PIOB
 
-#define DIO99_PIN 10
-#define DIO99_WPORT PIOC
+  #define DIO99_PIN 6
+  #define DIO99_WPORT PIOB
 
-#define DIO100_PIN 11
-#define DIO100_WPORT PIOC
+  #define DIO100_PIN 8
+  #define DIO100_WPORT PIOB
+
+  #define DIO101_PIN 5
+  #define DIO101_WPORT PIOB
+
+  #define DIO102_PIN 4
+  #define DIO102_WPORT PIOB
+
+  #define DIO103_PIN 3
+  #define DIO103_WPORT PIOB
+
+  #define DIO104_PIN 20
+  #define DIO104_WPORT PIOC
+
+  #define DIO105_PIN 22
+  #define DIO105_WPORT PIOB
+
+  #define DIO106_PIN 27
+  #define DIO106_WPORT PIOC
+
+  #define DIO107_PIN 10
+  #define DIO107_WPORT PIOB
+#else
+  #define DIO92_PIN 5
+  #define DIO92_WPORT PIOA
+
+  #define DIO93_PIN 12
+  #define DIO93_WPORT PIOB
+
+  #define DIO94_PIN 22
+  #define DIO94_WPORT PIOB
+
+  #define DIO95_PIN 23
+  #define DIO95_WPORT PIOB
+
+  #define DIO96_PIN 24
+  #define DIO96_WPORT PIOB
+
+  #define DIO97_PIN 20
+  #define DIO97_WPORT PIOC
+
+  #define DIO98_PIN 27
+  #define DIO98_WPORT PIOC
+
+  #define DIO99_PIN 10
+  #define DIO99_WPORT PIOC
+
+  #define DIO100_PIN 11
+  #define DIO100_WPORT PIOC
+#endif
 
 #endif // _FASTIO_DUE_H

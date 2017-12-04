@@ -20,14 +20,6 @@
  *
  */
 
-/**
- * About Marlin
- *
- * This firmware is a mashup between Sprinter and grbl.
- *  - https://github.com/kliment/Sprinter
- *  - https://github.com/simen/grbl/tree
- */
-
 #include "src/inc/MarlinConfig.h"
 
 #if ENABLED(ULTRA_LCD)
@@ -62,7 +54,6 @@
 #endif
 
 #if ENABLED(HAVE_TMC2130)
-  #include <SPI.h>
   #include <TMC2130Stepper.h>
 #endif
 

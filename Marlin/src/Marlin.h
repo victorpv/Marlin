@@ -22,15 +22,15 @@
 #ifndef __MARLIN_H__
 #define __MARLIN_H__
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "inc/MarlinConfig.h"
 
 #ifdef DEBUG_GCODE_PARSER
   #include "gcode/parser.h"
 #endif
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void stop();
 
@@ -166,10 +166,6 @@ void kill(const char*);
 
 void quickstop_stepper();
 
-#if ENABLED(FILAMENT_RUNOUT_SENSOR)
-  void handle_filament_runout();
-#endif
-
 extern bool Running;
 inline bool IsRunning() { return  Running; }
 inline bool IsStopped() { return !Running; }
@@ -190,18 +186,12 @@ extern volatile bool wait_for_heatup;
 // Inactivity shutdown timer
 extern millis_t max_inactive_time, stepper_inactive_time;
 
-#if HAS_SERVOS
-  #include "HAL/servo.h"
-  extern HAL_SERVO_LIB servo[NUM_SERVOS];
-  #define MOVE_SERVO(I, P) servo[I].move(P)
-  #if HAS_Z_SERVO_ENDSTOP
-    #define DEPLOY_Z_SERVO() MOVE_SERVO(Z_ENDSTOP_SERVO_NR, z_servo_angle[0])
-    #define STOW_Z_SERVO() MOVE_SERVO(Z_ENDSTOP_SERVO_NR, z_servo_angle[1])
-  #endif
-#endif
-
 #if FAN_COUNT > 0
   extern int16_t fanSpeeds[FAN_COUNT];
+  #if ENABLED(EXTRA_FAN_SPEED)
+    extern int16_t old_fanSpeeds[FAN_COUNT],
+                   new_fanSpeeds[FAN_COUNT];
+  #endif
   #if ENABLED(PROBING_FANS_OFF)
     extern bool fans_paused;
     extern int16_t paused_fanSpeeds[FAN_COUNT];
@@ -209,6 +199,11 @@ extern millis_t max_inactive_time, stepper_inactive_time;
 #endif
 
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
+  enum AdvancedPauseMenuResponse {
+    ADVANCED_PAUSE_RESPONSE_WAIT_FOR,
+    ADVANCED_PAUSE_RESPONSE_EXTRUDE_MORE,
+    ADVANCED_PAUSE_RESPONSE_RESUME_PRINT
+  };
   extern AdvancedPauseMenuResponse advanced_pause_menu_response;
 #endif
 
@@ -216,7 +211,7 @@ extern millis_t max_inactive_time, stepper_inactive_time;
   extern int lpq_len;
 #endif
 
-bool pin_is_protected(const int8_t pin);
+bool pin_is_protected(const pin_t pin);
 
 #if HAS_SUICIDE
   inline void suicide() { OUT_WRITE(SUICIDE_PIN, LOW); }
