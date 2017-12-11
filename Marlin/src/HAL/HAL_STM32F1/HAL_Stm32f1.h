@@ -65,16 +65,18 @@
 // Defines
 // --------------------------------------------------------------------------
 
+#define NUM_SERIAL 1
+
 #if SERIAL_PORT == -1
-  #define MYSERIAL SerialUSB
+  #define MYSERIAL0 SerialUSB
 #elif SERIAL_PORT == 0
-  #define MYSERIAL Serial
+  #define MYSERIAL0 Serial
 #elif SERIAL_PORT == 1
-  #define MYSERIAL Serial1
+  #define MYSERIAL0 Serial1
 #elif SERIAL_PORT == 2
-  #define MYSERIAL Serial2
+  #define MYSERIAL0 Serial2
 #elif SERIAL_PORT == 3
-  #define MYSERIAL Serial3
+  #define MYSERIAL0 Serial3
 #endif
 
 /**
