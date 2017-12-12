@@ -22,11 +22,11 @@ Add the following 3 lines:
 
 ### Main developers:
 Victorpv
+xC0000005
 
 
 ### Most up to date repository for this HAL:
 https://github.com/victorpv/Marlin/tree/bugfix-2.0.x
 
 PRs should be first sent to that fork, and once tested merged to Marlin bugfix-2.0.x branch.
-
 

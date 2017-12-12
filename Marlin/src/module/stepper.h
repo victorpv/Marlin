@@ -113,7 +113,7 @@ class Stepper {
 
     static long acceleration_time, deceleration_time;
     //unsigned long accelerate_until, decelerate_after, acceleration_rate, initial_rate, final_rate, nominal_rate;
-    static hal_timer_t acc_step_rate; // needed for deceleration start point
+    static uint32_t acc_step_rate; // needed for deceleration start point
     static uint8_t step_loops, step_loops_nominal;
     static hal_timer_t OCR1A_nominal;
 
@@ -278,7 +278,7 @@ class Stepper {
 
   private:
 
-    FORCE_INLINE static hal_timer_t calc_timer(hal_timer_t step_rate) {
+    FORCE_INLINE static hal_timer_t calc_timer(uint32_t step_rate) {
       hal_timer_t timer;
 
       NOMORE(step_rate, MAX_STEP_FREQUENCY);

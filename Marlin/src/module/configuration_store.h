@@ -64,15 +64,11 @@ class MarlinSettings {
     #endif
 
     #if DISABLED(DISABLE_M503)
-<<<<<<< HEAD
-      static void report(const bool forReplay=false);
-=======
       static void report(bool forReplay=false
         #if NUM_SERIAL > 1
           , const int8_t port = -1
         #endif
       );
->>>>>>> cf4fdd22683e4fc28ac8c155b06d2cd8148c4f75
     #else
       FORCE_INLINE
       static void report(const bool forReplay=false) { UNUSED(forReplay); }

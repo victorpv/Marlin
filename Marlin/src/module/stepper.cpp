@@ -132,9 +132,9 @@ volatile uint32_t Stepper::step_events_completed = 0; // The number of step even
    * This fix isn't perfect and may lose steps - but better than locking up completely
    * in future the planner should slow down if advance stepping rate would be too high
    */
-  FORCE_INLINE hal_timer_t adv_rate(const int steps, const hal_timer_t timer, const uint8_t loops) {
+  FORCE_INLINE uint32_t adv_rate(const int steps, const uint32_t timer, const uint8_t loops) {
     if (steps) {
-      const hal_timer_t rate = (timer * loops) / abs(steps);
+      const uint32_t rate = (timer * loops) / abs(steps);
       //return constrain(rate, 1, ADV_NEVER - 1)
       return rate ? rate : 1;
     }
@@ -152,7 +152,7 @@ volatile signed char Stepper::count_direction[NUM_AXIS] = { 1, 1, 1, 1 };
   long Stepper::counter_m[MIXING_STEPPERS];
 #endif
 
-hal_timer_t Stepper::acc_step_rate; // needed for deceleration start point
+uint32_t Stepper::acc_step_rate; // needed for deceleration start point
 uint8_t Stepper::step_loops, Stepper::step_loops_nominal;
 hal_timer_t Stepper::OCR1A_nominal;
 
@@ -698,7 +698,7 @@ void Stepper::isr() {
     #endif // LIN_ADVANCE
   }
   else if (step_events_completed > (uint32_t)current_block->decelerate_after) {
-    hal_timer_t step_rate;
+    uint32_t step_rate;
     #ifdef CPU_32_BIT
       MultiU32X24toH32(step_rate, deceleration_time, current_block->acceleration_rate);
     #else
@@ -900,7 +900,7 @@ void Stepper::isr() {
     // Don't run the ISR faster than possible
     #ifdef CPU_32_BIT
       // Make sure stepper interrupt does not monopolise CPU by adjusting count to give about 8 us room
-      uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM),
+      hal_timer_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM),
                stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
       HAL_timer_set_count(STEP_TIMER_NUM, max(stepper_timer_count, stepper_timer_current_count));
     #else

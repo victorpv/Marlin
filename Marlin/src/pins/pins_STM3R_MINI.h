@@ -84,7 +84,7 @@
 // Misc. Functions
 //
 //#define SDPOWER            -1
-#define SDSS               PA15
+#define SDSS               PA4
 #define LED_PIN            PB2
 
 //#define PS_ON_PIN          -1
@@ -137,14 +137,18 @@
     #define LCD_PINS_D6         PB14
     #define LCD_PINS_D7         PB15
   #else
-    #define LCD_PINS_RS         PB8
-    #define LCD_PINS_ENABLE     PD2
-    #define LCD_PINS_D4         PB12
-    #define LCD_PINS_D5         PB13
-    #define LCD_PINS_D6         PB14
-    #define LCD_PINS_D7         PB15
+    #define LCD_PINS_RS         PB12
+    #define LCD_PINS_ENABLE     PB15
+    #define LCD_PINS_D4         PB13
+    #define LCD_PINS_D5         PB14
+    #define LCD_PINS_D6         PD8
+    #define LCD_PINS_D7         PD9
+    #define BTN_EN1             PD10
+    #define BTN_EN2             PD11
+    #define BTN_ENC             PC13
+    #define BEEPER_PIN          PD15
     #if DISABLED(NEWPANEL)
-      #define BEEPER_PIN        33
+
       // Buttons are attached to a shift register
       // Not wired yet
       //#define SHIFT_CLK 38
@@ -158,14 +162,14 @@
 
     #if ENABLED(REPRAP_DISCOUNT_SMART_CONTROLLER)
 
-      #define BEEPER_PIN        37
+      #define BEEPER_PIN        PD15
 
-      #define BTN_EN1           31
-      #define BTN_EN2           33
-      #define BTN_ENC           35
+      #define BTN_EN1           PD10
+      #define BTN_EN2           PD11
+      #define BTN_ENC           PC13
 
-      #define SD_DETECT_PIN     49
-      #define KILL_PIN          41
+      #define SD_DETECT_PIN     PA15
+      #define KILL_PIN          PD3
 
       #if ENABLED(BQ_LCD_SMART_CONTROLLER)
         #define LCD_BACKLIGHT_PIN 39
@@ -173,10 +177,11 @@
 
     #elif ENABLED(REPRAPWORLD_GRAPHICAL_LCD)
 
-      #define BTN_EN1           64
-      #define BTN_EN2           59
-      #define BTN_ENC           63
-      #define SD_DETECT_PIN     42
+      #define BTN_EN1           PD10
+      #define BTN_EN2           PD11
+      #define BTN_ENC           PC13
+
+      #define SD_DETECT_PIN     PA15
 
     #elif ENABLED(LCD_I2C_PANELOLU2)
 

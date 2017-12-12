@@ -45,7 +45,12 @@ const char echomagic[] PROGMEM = "echo:";
 #endif
 
 void serialprintPGM(const char * str) {
-  while (char ch = pgm_read_byte(str++)) SERIAL_CHAR(ch);
+  #if defined (TARGET_LPC1768) || defined(__STM32F1__)
+    SERIAL_PROTOCOL(str);
+  #else
+    while (char ch = pgm_read_byte(str++)) SERIAL_CHAR(ch);
+  #endif
+
 }
 
 void serial_echopair_PGM(const char* s_P, const char *v)   { serialprintPGM(s_P); SERIAL_ECHO(v); }

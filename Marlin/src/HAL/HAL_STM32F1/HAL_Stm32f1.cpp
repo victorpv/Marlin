@@ -89,16 +89,31 @@ uint8 adc_pins[] = {
 
 enum TEMP_PINS
 {
+  #if HAS_TEMP_0
     TEMP_0,
+  #endif
+  #if HAS_TEMP_1
     TEMP_1,
+  #endif
+  #if HAS_TEMP_2
     TEMP_2,
+  #endif
+  #if HAS_TEMP_3
     TEMP_3,
+  #endif
+  #if HAS_TEMP_4
     TEMP_4,
+  #endif
+  #if HAS_TEMP_BED
     TEMP_BED,
+  #endif
+  #if ENABLED(FILAMENT_WIDTH_SENSOR)
     FILWIDTH
+  #endif
+    ADC_PIN_COUNT
 };
 
-#define ADC_PIN_COUNT (sizeof(adc_pins)/sizeof(adc_pins[0]))
+
 uint16_t HAL_adc_results[ADC_PIN_COUNT];
 
 
@@ -123,7 +138,6 @@ void sei(void) { interrupts(); }
 */
 
 void HAL_clear_reset_source(void) { }
-
 /**
  * TODO: Check this and change or remove.
  * currently returns 1 that's equal to poweron reset.
@@ -180,34 +194,45 @@ void HAL_adc_init(void)
   adc.startConversion();
 }
 
-void HAL_adc_start_conversion (const uint8_t adc_pin) {
-    TEMP_PINS pin_index = TEMP_0;
-    if (adc_pin == TEMP_0_PIN){
-          pin_index = TEMP_0;
-    }
-
-    else if (adc_pin == TEMP_1_PIN) {
-          pin_index = TEMP_1;
-    }
-    else if (adc_pin == TEMP_2_PIN) {
-          pin_index = TEMP_2;
-    }
-    else if (adc_pin == TEMP_3_PIN) {
-          pin_index = TEMP_3;
-    }
-    else if (adc_pin == TEMP_4_PIN) {
-          pin_index = TEMP_4;
-    }
-    else if (adc_pin == TEMP_BED_PIN) {
-          pin_index = TEMP_BED;
-    }
+void HAL_adc_start_conversion (uint8_t adc_pin) {
+  TEMP_PINS pin_index;
+#if HAS_TEMP_0
+  if (adc_pin == TEMP_0_PIN){
+      pin_index = TEMP_0;
+  }
+#endif
+#if HAS_TEMP_1
+  if (adc_pin == TEMP_1_PIN) {
+    pin_index = TEMP_1;
+  }
+#endif
+#if HAS_TEMP_2
+  if (adc_pin == TEMP_2_PIN) {
+    pin_index = TEMP_2;
+  }
+#endif
+#if HAS_TEMP_3
+  if (adc_pin == TEMP_3_PIN) {
+    pin_index = TEMP_3;
+  }
+#endif
+#if HAS_TEMP_4
+  if (adc_pin == TEMP_4_PIN) {
+    pin_index = TEMP_4;
+  }
+#endif
+#if HAS_TEMP_BED
+  if (adc_pin == TEMP_BED_PIN) {
+    pin_index = TEMP_BED;
+  }
+#endif
 #if ENABLED(FILAMENT_WIDTH_SENSOR)
-    else if (adc_pin == FILWIDTH_PIN) {
-          pin_index = FILWIDTH;
-    }
+  if (adc_pin == FILWIDTH_PIN) {
+    pin_index = FILWIDTH;
+  }
 #endif
 
-    HAL_adc_result = (HAL_adc_results[(int)pin_index] >> 2)& 0x3ff; // shift to get 10 bits only.
+  HAL_adc_result = (HAL_adc_results[(int)pin_index] >> 2)& 0x3ff; // shift to get 10 bits only.
 }
 
 uint16_t HAL_adc_get_result(void) {
