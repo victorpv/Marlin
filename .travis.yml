@@ -427,3 +427,14 @@ script:
   - cp Marlin/Configuration.h Marlin/src/config/default/Configuration.h
   - cp Marlin/Configuration_adv.h Marlin/src/config/default/Configuration_adv.h
   - build_marlin_pio ${TRAVIS_BUILD_DIR} ${TEST_PLATFORM}
+
+  #############################
+  # STM32F1 default config test
+  #############################
+
+  - export TEST_PLATFORM="-e STM32F1"
+  - restore_configs
+  - opt_set MOTHERBOARD STM3R_MINI
+  - cp Marlin/Configuration.h Marlin/src/config/default/Configuration.h
+  - cp Marlin/Configuration_adv.h Marlin/src/config/default/Configuration_adv.h
+  - build_marlin_pio ${TRAVIS_BUILD_DIR} ${TEST_PLATFORM}
