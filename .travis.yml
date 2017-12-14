@@ -434,7 +434,8 @@ script:
 
   - export TEST_PLATFORM="-e STM32F1"
   - restore_configs
-  - opt_set MOTHERBOARD STM3R_MINI
+  - opt_set MOTHERBOARD BOARD_MALYAN_M200
+  - opt_set EXTRUDERS 1
   - cp Marlin/Configuration.h Marlin/src/config/default/Configuration.h
   - cp Marlin/Configuration_adv.h Marlin/src/config/default/Configuration_adv.h
   - build_marlin_pio ${TRAVIS_BUILD_DIR} ${TEST_PLATFORM}
