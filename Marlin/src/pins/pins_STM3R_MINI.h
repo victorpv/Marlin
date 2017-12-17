@@ -85,7 +85,7 @@
 //
 //#define SDPOWER            -1
 #define SDSS               PA4
-#define LED_PIN            PB2
+#define LED_PIN            PD5
 
 //#define PS_ON_PIN          -1
 //#define KILL_PIN           -1
@@ -116,8 +116,8 @@
 
 // Laser control
 #if ENABLED(SPINDLE_LASER_ENABLE)
-#define SPINDLE_LASER_PWM_PIN       PB8
-#define SPINDLE_LASER_ENABLE_PIN    PD5
+#define SPINDLE_LASER_PWM_PIN       PB0
+#define SPINDLE_LASER_ENABLE_PIN    PB1
 #endif
 
 //
