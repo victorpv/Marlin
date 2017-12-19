@@ -432,7 +432,7 @@ script:
   # STM32F1 default config test
   #############################
 
-  - export TEST_PLATFORM="-e STM32F1"
+  - export TEST_PLATFORM="-e STM32F103C"
   - restore_configs
   - opt_set MOTHERBOARD BOARD_MALYAN_M200
   - opt_set EXTRUDERS 1
