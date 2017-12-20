@@ -68,15 +68,15 @@
   #error "SERIAL_PORT must be from -1 to 3"
 #endif
 #if SERIAL_PORT == -1
-  #define MYSERIAL0 SerialUSB
-#elif SERIAL_PORT == 0
   #define MYSERIAL0 Serial
-#elif SERIAL_PORT == 1
+#elif SERIAL_PORT == 0
   #define MYSERIAL0 Serial1
-#elif SERIAL_PORT == 2
+#elif SERIAL_PORT == 1
   #define MYSERIAL0 Serial2
-#elif SERIAL_PORT == 3
+#elif SERIAL_PORT == 2
   #define MYSERIAL0 Serial3
+#elif SERIAL_PORT == 3
+  #define MYSERIAL0 Serial4
 #endif
 
 #ifdef SERIAL_PORT_2
@@ -87,15 +87,15 @@
   #endif
   #define NUM_SERIAL 2
   #if SERIAL_PORT_2 == -1
-    #define MYSERIAL1 SerialUSB
-  #elif SERIAL_PORT_2 == 0
     #define MYSERIAL1 Serial
-  #elif SERIAL_PORT_2 == 1
+  #elif SERIAL_PORT_2 == 0
     #define MYSERIAL1 Serial1
-  #elif SERIAL_PORT_2 == 2
+  #elif SERIAL_PORT_2 == 1
     #define MYSERIAL1 Serial2
-  #elif SERIAL_PORT_2 == 3
+  #elif SERIAL_PORT_2 == 2
     #define MYSERIAL1 Serial3
+  #elif SERIAL_PORT_2 == 3
+    #define MYSERIAL1 Serial4
   #endif
 #else
   #define NUM_SERIAL 1
