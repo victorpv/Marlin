@@ -46,9 +46,18 @@
 typedef uint16_t hal_timer_t;
 #define HAL_TIMER_TYPE_MAX 0xFFFF
 
-#define STEP_TIMER_NUM 5  // index of timer to use for stepper
+#ifndef STEP_TIMER_NUM
+  #if STM32_HAVE_TIMER(5)
+    #define STEP_TIMER_NUM 5  // index of timer to use for stepper
+  #elif STM32_HAVE_TIMER(4)
+    #define STEP_TIMER_NUM 4 
+  #endif
+#endif
 #define STEP_TIMER_CHAN 1 // Channel of the timer to use for compare and interrupts
-#define TEMP_TIMER_NUM 2  // index of timer to use for temperature
+
+#ifndef TEMP_TIMER_NUM
+  #define TEMP_TIMER_NUM 2  // index of timer to use for temperature
+#endif
 #define TEMP_TIMER_CHAN 1 // Channel of the timer to use for compare and interrupts
 
 #define CAT(a, ...) a ## __VA_ARGS__
