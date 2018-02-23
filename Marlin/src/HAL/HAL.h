@@ -29,8 +29,6 @@
 #ifndef _HAL_H
 #define _HAL_H
 
-#include "HAL_SPI.h"
-
 #define CPU_32_BIT
 
 #ifdef __AVR__

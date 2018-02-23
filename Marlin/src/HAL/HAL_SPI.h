@@ -29,6 +29,7 @@
 #define _HAL_SPI_H_
 
 #include <stdint.h>
+#include <SPI.h>
 
 /**
  * SPI speed where 0 <= index <= 6
@@ -63,6 +64,7 @@
 #define SPI_DATAMODE_2 0x08
 #define SPI_DATAMODE_3 0x0C
 
+#if 0
 // Standard SPI functions
 /** Initialise SPI bus */
 void spiBegin(void);
@@ -77,6 +79,7 @@ void spiRead(uint8_t* buf, uint16_t nbyte);
 /** Write token and then write from 512 byte buffer to SPI (for SD card) */
 void spiSendBlock(uint8_t token, const uint8_t* buf);
 /** Begin SPI transaction, set clock, bit order, data mode */
-void spiBeginTransaction(uint32_t spiClock, uint8_t bitOrder, uint8_t dataMode);
+void spiBeginTransaction(uint32_t spiClock, BitOrder bitOrder, uint8_t dataMode);
+#endif
 
 #endif // _HAL_SPI_H_
